@@ -1,6 +1,7 @@
 baseURL = 'https://blog.mypp.site/'
 languageCode = 'en-us'
 title = 'My Personal Portfolio'
+# Updated to ensure GitHub Pages deployment
 relativeURLs = false
 canonifyURLs = true
 theme = 'PaperMod'

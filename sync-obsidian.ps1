@@ -13,10 +13,10 @@ if (-not (Test-Path $HugoContentPath)) {
     New-Item -ItemType Directory -Path $HugoContentPath -Force
 }
 
-# Copy the blog content structure
+# Strategy 1: Copy from the blog directory structure (primary source)
 $BlogPath = Join-Path $ObsidianPath "blog\content"
 if (Test-Path $BlogPath) {
-    Write-Host "Copying blog content from: $BlogPath" -ForegroundColor Yellow
+    Write-Host "Copying from Hugo blog structure: $BlogPath" -ForegroundColor Yellow
     
     # Copy posts
     $PostsSource = Join-Path $BlogPath "posts"
@@ -30,8 +30,11 @@ if (Test-Path $BlogPath) {
         Get-ChildItem -Path $PostsSource -Filter "*.md" | ForEach-Object {
             $destinationFile = Join-Path $PostsDestination $_.Name
             Copy-Item -Path $_.FullName -Destination $destinationFile -Force
-            Write-Host "Copied: $($_.Name)" -ForegroundColor Cyan
+            Write-Host "✅ Copied post: $($_.Name)" -ForegroundColor Cyan
         }
+        
+        $postCount = (Get-ChildItem -Path $PostsSource -Filter "*.md").Count
+        Write-Host "📝 Synced $postCount blog posts" -ForegroundColor Green
     }
     
     # Copy about page
@@ -46,9 +49,11 @@ if (Test-Path $BlogPath) {
         Get-ChildItem -Path $AboutSource -Filter "*.md" | ForEach-Object {
             $destinationFile = Join-Path $AboutDestination $_.Name
             Copy-Item -Path $_.FullName -Destination $destinationFile -Force
-            Write-Host "Copied: about/$($_.Name)" -ForegroundColor Cyan
+            Write-Host "✅ Copied: about/$($_.Name)" -ForegroundColor Cyan
         }
     }
+} else {
+    Write-Host "⚠️  No blog directory found - will sync from vault root only" -ForegroundColor Yellow
 }
 
 # Copy any other markdown files in the root of the vault

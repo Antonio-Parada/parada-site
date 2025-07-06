@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>My Personal Portfolio</title>
+    <link>https://mypp.site/parada/</link>
+    <description>Recent content on My Personal Portfolio</description>
+    <generator>Hugo -- 0.147.9</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 06 Jul 2025 21:28:00 +0000</lastBuildDate>
+    <atom:link href="https://mypp.site/parada/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://mypp.site/parada/about/</link>
+      <pubDate>Sun, 06 Jul 2025 21:28:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/about/</guid>
+      <description>&lt;h1 id=&#34;about-me&#34;&gt;About Me&lt;/h1&gt;
+&lt;p&gt;Welcome to my personal blog! This is where I share my thoughts, notes, and discoveries.&lt;/p&gt;
+&lt;p&gt;This blog is built with Hugo and the beautiful PaperMod theme, automatically generated from my markdown files.&lt;/p&gt;
+&lt;p&gt;Feel free to explore my posts and get in touch if you have any questions or comments!&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Fire Horse Acupuncture - Website Planning</title>
+      <link>https://mypp.site/parada/posts/accu-website/</link>
+      <pubDate>Sun, 06 Jul 2025 21:28:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/posts/accu-website/</guid>
+      <description>&lt;h1 id=&#34;fire-horse-acupuncture&#34;&gt;Fire Horse Acupuncture&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;FPF&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Website landing page&lt;/p&gt;
+&lt;h2 id=&#34;services--pricing&#34;&gt;Services &amp;amp; Pricing&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Insurance&lt;/strong&gt; - BC/BS provider for those plans that cover acupuncture&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Cash clients&lt;/strong&gt;: $90 session&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Free initial 15 min phone consultation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Spring Rejuvenation package&lt;/strong&gt;: buy 3 sessions &amp;amp; get 1 free&lt;/p&gt;
+&lt;h2 id=&#34;testimonials&#34;&gt;Testimonials&lt;/h2&gt;
+&lt;p&gt;Reset, rebalance, restore, rejuvenate, revitalize your body &amp;amp; mind&lt;/p&gt;
+&lt;p&gt;Being your nervous system back to balance&lt;/p&gt;
+&lt;p&gt;Acupuncture works with your bodies natural ability to come back to homeostasis&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Qi&lt;/strong&gt; - remove the blocks or disturbances in your qi&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>The Comprehensive History and Etymology of the term &#34;Poopoo&#34;</title>
+      <link>https://mypp.site/parada/posts/poopoo-etymology/</link>
+      <pubDate>Sun, 06 Jul 2025 21:27:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/posts/poopoo-etymology/</guid>
+      <description>&lt;h1 id=&#34;the-comprehensive-history-and-etymology-of-the-term-poopoo&#34;&gt;The Comprehensive History and Etymology of the term &amp;ldquo;Poopoo&amp;rdquo;&lt;/h1&gt;
+&lt;p&gt;This document provides a detailed exploration of the origins, evolution, and cultural significance of the term &amp;ldquo;poopoo.&amp;rdquo;&lt;/p&gt;
+&lt;h2 id=&#34;etymological-roots-from-maritime-to-infancy&#34;&gt;Etymological Roots: From Maritime to Infancy&lt;/h2&gt;
+&lt;p&gt;The word &amp;ldquo;poopoo&amp;rdquo; is a fascinating example of linguistic evolution, with its roots diverging from two distinct and unrelated paths: one nautical and the other onomatopoeic, related to bodily functions.&lt;/p&gt;
+&lt;h3 id=&#34;the-nautical-poop&#34;&gt;The Nautical &amp;ldquo;Poop&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;The term &amp;ldquo;poop&amp;rdquo; or &amp;ldquo;poop deck&amp;rdquo; has a long and established history in maritime language. It refers to the stern or aftermost deck of a ship. This usage dates back to around 1400 and comes from the Old French &amp;ldquo;poupe,&amp;rdquo; which in turn derives from the Latin &amp;ldquo;puppis,&amp;rdquo; meaning &amp;ldquo;stern.&amp;rdquo; This nautical term has no direct connection to the scatological meaning of &amp;ldquo;poop,&amp;rdquo; but it is an important part of the word&amp;rsquo;s history.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Welcome to My Blog</title>
+      <link>https://mypp.site/parada/posts/welcome/</link>
+      <pubDate>Sun, 06 Jul 2025 21:26:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/posts/welcome/</guid>
+      <description>&lt;h1 id=&#34;welcome-to-my-blog&#34;&gt;Welcome to My Blog!&lt;/h1&gt;
+&lt;p&gt;This is my first post on my new Hugo-powered blog!&lt;/p&gt;
+&lt;p&gt;This blog is automatically generated from my markdown files, making it easy to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ Write content in plain markdown&lt;/li&gt;
+&lt;li&gt;✅ Organize posts with tags and categories&lt;/li&gt;
+&lt;li&gt;✅ Create a beautiful, responsive website&lt;/li&gt;
+&lt;li&gt;✅ Keep everything synced with my notes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;what-youll-find-here&#34;&gt;What You&amp;rsquo;ll Find Here&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;ll be sharing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Research and discoveries&lt;/li&gt;
+&lt;li&gt;Project notes and documentation&lt;/li&gt;
+&lt;li&gt;Thoughts and insights&lt;/li&gt;
+&lt;li&gt;Technical tutorials&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Stay tuned for more content!&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://mypp.site/parada/accu-website/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/accu-website/</guid>
+      <description>&lt;p&gt;Fire horse acupuncture&lt;/p&gt;
+&lt;p&gt;FPF&lt;/p&gt;
+&lt;p&gt;Website landing page&lt;/p&gt;
+&lt;p&gt;Sign&lt;/p&gt;
+&lt;p&gt;Insurance - bc/bs provider for those plans that cover acupuncture&lt;/p&gt;
+&lt;p&gt;Cash clients: $90 session&lt;/p&gt;
+&lt;p&gt;Free initial 15 min phone consultation&lt;/p&gt;
+&lt;p&gt;Spring Rejuvenation package: buy 3 sessions &amp;amp; get 1 free&lt;/p&gt;
+&lt;p&gt;Testimonials&lt;/p&gt;
+&lt;p&gt;Reset, rebalance, restore, rejuvenate, revitalize your body &amp;amp; mind&lt;/p&gt;
+&lt;p&gt;Being your nervous system back to balance&lt;/p&gt;
+&lt;p&gt;Acupuncture works with your bodies natural ability to come back to homeostasis&lt;/p&gt;
+&lt;p&gt;Qi - remove the blocks or disturbances in your qi&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://mypp.site/parada/poopoo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/poopoo/</guid>
+      <description>&lt;h1 id=&#34;the-comprehensive-history-and-etymology-of-the-term-poopoo&#34;&gt;The Comprehensive History and Etymology of the term &amp;ldquo;Poopoo&amp;rdquo;&lt;/h1&gt;
+&lt;p&gt;This document provides a detailed exploration of the origins, evolution, and cultural significance of the term &amp;ldquo;poopoo.&amp;rdquo;&lt;/p&gt;
+&lt;h2 id=&#34;etymological-roots-from-maritime-to-infancy&#34;&gt;Etymological Roots: From Maritime to Infancy&lt;/h2&gt;
+&lt;p&gt;The word &amp;ldquo;poopoo&amp;rdquo; is a fascinating example of linguistic evolution, with its roots diverging from two distinct and unrelated paths: one nautical and the other onomatopoeic, related to bodily functions.&lt;/p&gt;
+&lt;h3 id=&#34;the-nautical-poop&#34;&gt;The Nautical &amp;ldquo;Poop&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;The term &amp;ldquo;poop&amp;rdquo; or &amp;ldquo;poop deck&amp;rdquo; has a long and established history in maritime language. It refers to the stern or aftermost deck of a ship. This usage dates back to around 1400 and comes from the Old French &amp;ldquo;poupe,&amp;rdquo; which in turn derives from the Latin &amp;ldquo;puppis,&amp;rdquo; meaning &amp;ldquo;stern.&amp;rdquo; This nautical term has no direct connection to the scatological meaning of &amp;ldquo;poop,&amp;rdquo; but it is an important part of the word&amp;rsquo;s history.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://mypp.site/parada/readme-blog/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/readme-blog/</guid>
+      <description>&lt;h1 id=&#34;hugo-blog-setup&#34;&gt;Hugo Blog Setup&lt;/h1&gt;
+&lt;p&gt;Your beautiful Hugo blog is ready! 🎉&lt;/p&gt;
+&lt;h2 id=&#34;quick-start&#34;&gt;Quick Start&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Start the blog server&lt;/strong&gt;: Double-click &lt;code&gt;start-blog.bat&lt;/code&gt; or run:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hugo server --bind 0.0.0.0 --baseURL http://localhost:1313
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Open your blog&lt;/strong&gt;: Visit &lt;a href=&#34;http://localhost:1313&#34;&gt;http://localhost:1313&lt;/a&gt; in your browser&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;adding-new-posts&#34;&gt;Adding New Posts&lt;/h2&gt;
+&lt;h3 id=&#34;method-1-automatic-sync-recommended&#34;&gt;Method 1: Automatic Sync (Recommended)&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Add new &lt;code&gt;.md&lt;/code&gt; files to your main directory&lt;/li&gt;
+&lt;li&gt;Run &lt;code&gt;sync-blog.ps1&lt;/code&gt; to automatically convert them to blog posts&lt;/li&gt;
+&lt;li&gt;The blog will auto-refresh if the server is running&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;method-2-manual-creation&#34;&gt;Method 2: Manual Creation&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Create new files in &lt;code&gt;blog/content/posts/&lt;/code&gt; with this format:
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-markdown&#34; data-lang=&#34;markdown&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;title: &amp;#34;Your Post Title&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;date: 2025-07-06T21:28:00Z
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;draft: false
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tags: [&amp;#34;tag1&amp;#34;, &amp;#34;tag2&amp;#34;]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;categories: [&amp;#34;Category&amp;#34;]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Your content here...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;features&#34;&gt;Features&lt;/h2&gt;
+&lt;p&gt;✅ &lt;strong&gt;Auto-generated&lt;/strong&gt; from your markdown files&lt;br&gt;
+✅ &lt;strong&gt;Beautiful PaperMod theme&lt;/strong&gt; with dark/light mode&lt;br&gt;
+✅ &lt;strong&gt;SEO optimized&lt;/strong&gt; with meta tags and social sharing&lt;br&gt;
+✅ &lt;strong&gt;Responsive design&lt;/strong&gt; works on all devices&lt;br&gt;
+✅ &lt;strong&gt;Fast search&lt;/strong&gt; and navigation&lt;br&gt;
+✅ &lt;strong&gt;Code highlighting&lt;/strong&gt; with copy buttons&lt;br&gt;
+✅ &lt;strong&gt;Reading time&lt;/strong&gt; and word count&lt;br&gt;
+✅ &lt;strong&gt;Table of contents&lt;/strong&gt; for long posts&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://mypp.site/parada/whats-new/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://mypp.site/parada/whats-new/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

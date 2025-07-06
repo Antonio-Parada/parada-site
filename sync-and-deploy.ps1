@@ -47,7 +47,7 @@ if ($LASTEXITCODE -ne 0) {
 # Step 5: Deployment notification
 Write-Host "`n[5/5] Deployment initiated!" -ForegroundColor Green
 Write-Host "GitHub Actions will now build and deploy your site." -ForegroundColor Yellow
-Write-Host "Your site will be available at: https://mypp.site/parada/" -ForegroundColor Cyan
+Write-Host "Your site will be available at: https://blog.mypp.site/" -ForegroundColor Cyan
 Write-Host "Check deployment status at: https://github.com/Antonio-Parada/parada-site/actions" -ForegroundColor White
 
 Write-Host "`n=== Deployment Complete ===" -ForegroundColor Green

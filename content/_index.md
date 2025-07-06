@@ -1,11 +1,16 @@
 ---
 title: "My Personal Portfolio"
 description: "Welcome to my personal portfolio - showcasing my projects, thoughts, and professional journey"
+date: 2025-07-06T22:22:00Z
 ---
 
 # Welcome to My Personal Portfolio
 
-This is my personal portfolio where I showcase my projects, share my thoughts, and document my professional journey. Content is synced from my Obsidian vault and covers various topics including technology, development, and personal insights.
+Welcome to my digital space! This portfolio showcases my projects, thoughts, and professional journey. Built with Hugo and automatically synced from my Obsidian vault, this site reflects my passion for technology, development, and continuous learning.
+
+🚀 **Live since:** {{< param "date" >}}
+📍 **Hosted on:** GitHub Pages with custom domain
+⚡ **Tech Stack:** Hugo + PaperMod + Obsidian + GitHub Actions
 
 ## Recent Posts
 

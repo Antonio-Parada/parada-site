@@ -1,7 +1,7 @@
 ---
-title: "$star"
+title: "A Shift In Focus: Supporting the AV Industry"
 date: 2025-07-06T00:00:00Z
-draft: true
+draft: false
 ---
 
 ## A New Focus: From Production to Support

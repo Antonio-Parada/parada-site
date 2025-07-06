@@ -25,7 +25,7 @@ hugo server
 ## 📁 Project Structure
 
 ```
-parada-site/
+C:\Users\apara\OneDrive\Documents\parada-site/
 ├── .github/workflows/     # GitHub Actions for deployment
 ├── content/              # Hugo content (synced from Obsidian)
 ├── themes/PaperMod/      # Hugo theme

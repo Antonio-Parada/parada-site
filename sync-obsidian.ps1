@@ -3,7 +3,7 @@
 
 param(
     [string]$ObsidianPath = "C:\Users\apara\OneDrive\Documents\Obsidian Vault",
-    [string]$HugoContentPath = "C:\Users\apara\Documents\I Sell cards\parada-site\content"
+    [string]$HugoContentPath = "C:\Users\apara\OneDrive\Documents\parada-site\content"
 )
 
 Write-Host "Syncing Obsidian vault to Hugo site..." -ForegroundColor Green

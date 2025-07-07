@@ -1,26 +1,28 @@
-# Multi-tenant blog platform configuration
-baseURL = 'https://blog.mypp.site/'
+# Parada's Personal Blog Configuration
+baseURL = 'https://blog.mypp.site/parada/'
 languageCode = 'en-us'
-title = 'Blog Platform | Create Your Own Blog'
-# GitHub Pages multi-tenant setup
+title = "Parada's Blog"
+# Multi-tenant blog setup
 relativeURLs = false
 canonifyURLs = true
 theme = 'PaperMod'
 
-# Enable multi-tenant features
+# Content and static directories (relative to root)
+contentDir = '../../content'
+staticDir = '../../static'
+layoutDir = '../../layouts'
+dataDir = '../../data'
+themesDir = '../../themes'
+
+# Build settings
 enableGitInfo = true
 
 [pagination]
   pagerSize = 10
 
-# Multi-tenant blog configuration
-[params.platform]
-  enableMultiTenant = true
-  defaultBlog = 'parada'
-
 [params]
   env = 'production'
-  description = 'My personal portfolio showcasing my projects, thoughts, and expertise'
+  description = 'Personal blog by Parada - thoughts, projects, and technical insights'
   author = 'Parada'
   ShowReadingTime = true
   ShowShareButtons = true
@@ -37,28 +39,45 @@ enableGitInfo = true
   hideSummary = false
   showtoc = false
   tocopen = false
+  
+  # Hide platform banner on personal blog
+  hidePlatformBanner = true
+  
+  # Social links
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/Antonio-Parada"
+  
+  [[params.socialIcons]]
+    name = "linkedin" 
+    url = "https://linkedin.com/in/antonio-parada"
 
 [menu]
   [[menu.main]]
     identifier = 'home'
     name = 'Home'
-    url = '/'
+    url = '/parada/'
     weight = 10
   [[menu.main]]
     identifier = 'posts'
     name = 'Posts'
-    url = '/posts/'
+    url = '/parada/posts/'
     weight = 20
   [[menu.main]]
     identifier = 'tags'
     name = 'Tags'
-    url = '/tags/'
+    url = '/parada/tags/'
     weight = 30
   [[menu.main]]
-    identifier = 'create-blog'
-    name = '✨ Create Blog'
-    url = '/create-blog/'
+    identifier = 'about'
+    name = 'About'
+    url = '/parada/about/'
     weight = 40
+  [[menu.main]]
+    identifier = 'platform'
+    name = '🏠 Platform'
+    url = '/'
+    weight = 50
 
 [markup]
   [markup.goldmark]

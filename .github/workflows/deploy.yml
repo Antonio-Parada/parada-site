@@ -39,15 +39,46 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
-      - name: Build with Hugo
+      - name: Build Platform Site
         env:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
+          # Build main platform site
           hugo \
             --gc \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}"
+          
+          # Build Parada's personal blog
+          cd sites/parada
+          hugo \
+            --gc \
+            --minify \
+            --destination "../../public/parada" \
+            --baseURL "${{ steps.pages.outputs.base_url }}parada/"
+          cd ../..
+          
+          # Create CNAME file for custom domain
+          echo "blog.mypp.site" > public/CNAME
+          
+          # Create index redirect if needed
+          if [ ! -f public/index.html ]; then
+            cat > public/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="utf-8">
+              <title>Blog Platform</title>
+              <meta http-equiv="refresh" content="0; url=/parada/">
+              <link rel="canonical" href="/parada/">
+          </head>
+          <body>
+              <p><a href="/parada/">Redirecting to Parada's blog...</a></p>
+          </body>
+          </html>
+          EOF
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

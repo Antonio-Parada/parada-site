@@ -550,12 +550,12 @@ Start writing and sharing your amazing content!
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             // Local development
             return origin + '/auth/callback/';
-        } else if (hostname === 'antonio-parada.github.io') {
-            // GitHub Pages
-            return origin + '/parada-site/auth/callback/';
-        } else if (hostname.includes('mypp.site') || hostname.includes('blog.mypp.site')) {
-            // Custom domain
+        } else if (hostname === 'blog.mypp.site' || hostname.includes('mypp.site')) {
+            // Custom domain (primary)
             return origin + '/auth/callback/';
+        } else if (hostname === 'antonio-parada.github.io') {
+            // GitHub Pages fallback
+            return origin + '/parada-site/auth/callback/';
         } else {
             // Fallback - assume subdirectory deployment
             const basePath = window.location.pathname.includes('/parada-site/') ? '/parada-site' : '';

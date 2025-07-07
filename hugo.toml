@@ -1,5 +1,5 @@
 # Multi-tenant blog platform configuration
-baseURL = 'https://antonio-parada.github.io/parada-site/'
+baseURL = 'https://blog.mypp.site/'
 languageCode = 'en-us'
 title = 'Blog Platform | Create Your Own Blog'
 # GitHub Pages multi-tenant setup

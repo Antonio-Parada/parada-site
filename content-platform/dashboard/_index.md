@@ -170,8 +170,11 @@ Wrap up your thoughts."></textarea>
     </div>
 </div>
 
+<!-- Load authentication systems in correct order -->
+<script src="/js/auth-fix.js"></script>
 <script src="/js/google-auth.js"></script>
 <script src="/js/dashboard.js"></script>
+<script src="/js/auth-cleanup.js"></script>
 
 <style>
 .btn-primary {

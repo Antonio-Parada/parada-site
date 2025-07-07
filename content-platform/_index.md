@@ -83,3 +83,61 @@ Personal blog covering technology, business insights, and project updates.
 ---
 
 *Powered by [Hugo](https://gohugo.io/) • Hosted on [GitHub Pages](https://pages.github.com/) • Deployed with [GitHub Actions](https://github.com/features/actions)*
+
+<!-- Load authentication systems -->
+<script src="/js/auth-fix.js"></script>
+<script src="/js/google-auth.js"></script>
+<script src="/js/auth-cleanup.js"></script>
+<script src="/js/auth-status-check.js"></script>
+<script src="/js/navigation-fix.js"></script>
+
+<style>
+/* Global auth UI styles */
+.google-auth-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.google-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.google-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.google-login-btn, .google-logout-btn, .google-dashboard-btn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.google-logout-btn {
+    background: #dc3545;
+}
+
+.google-dashboard-btn {
+    background: #28a745;
+}
+
+.google-login-btn:hover, .google-logout-btn:hover, .google-dashboard-btn:hover {
+    opacity: 0.9;
+}
+</style>

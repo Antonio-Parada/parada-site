@@ -162,10 +162,20 @@ Wrap up with a memorable conclusion..."
 function handleBlogCreation(event) {
     event.preventDefault();
     
-    // Check if user is logged in
-    if (!googleAuth.currentUser) {
-        googleAuth.showError('Please login first to create a blog post');
-        return false;
+    // Check if user is logged in  
+    if (!googleAuth || !googleAuth.currentUser) {
+        // Try to get user from localStorage as fallback
+        const token = localStorage.getItem('google_auth_token');
+        const expiry = localStorage.getItem('google_auth_expiry');
+        
+        if (!token || !expiry || new Date().getTime() >= parseInt(expiry)) {
+            alert('Please login first to create a blog post');
+            // Redirect to login instead of showing error
+            if (typeof googleAuth !== 'undefined') {
+                googleAuth.login();
+            }
+            return false;
+        }
     }
     
     const formData = new FormData(event.target);

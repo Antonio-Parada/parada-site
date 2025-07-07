@@ -8,8 +8,8 @@ type: "dashboard"
 <div class="login-required" style="text-align: center; padding: 50px;">
     <h2>🔒 Login Required</h2>
     <p>Please sign in to access your dashboard.</p>
-    <button onclick="blogAuth.login()" class="login-btn" style="
-        background: #0366d6;
+    <button onclick="googleAuth.login()" class="login-btn" style="
+        background: #4285f4;
         color: white;
         border: none;
         padding: 10px 20px;
@@ -17,7 +17,17 @@ type: "dashboard"
         font-size: 16px;
         cursor: pointer;
         margin-top: 20px;
-    ">🔑 Sign in with GitHub</button>
+        display: inline-flex;
+        align-items: center;
+    ">
+        <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px;">
+            <path fill="#FFFFFF" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+            <path fill="#FFFFFF" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-2.7.75 4.8 4.8 0 0 1-4.52-3.36H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+            <path fill="#FFFFFF" d="M4.46 10.41a4.8 4.8 0 0 1-.25-1.41c0-.49.09-.97.25-1.41V5.52H1.83a8 8 0 0 0-.86 3.48c0 1.24.32 2.47.86 3.48l2.63-2.07z"/>
+            <path fill="#FFFFFF" d="M8.98 3.58c1.32 0 2.5.45 3.44 1.35l2.54-2.54A8 8 0 0 0 8.98 0 8 8 0 0 0 1.83 5.52L4.46 7.6A4.77 4.77 0 0 1 8.98 3.58z"/>
+        </svg>
+        🔑 Sign in with Google
+    </button>
 </div>
 
 <div class="auth-required dashboard-content" style="display: none;">
@@ -160,7 +170,7 @@ Wrap up your thoughts."></textarea>
     </div>
 </div>
 
-<script src="/js/auth.js"></script>
+<script src="/js/google-auth.js"></script>
 <script src="/js/dashboard.js"></script>
 
 <style>

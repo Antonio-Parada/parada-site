@@ -1,8 +1,7 @@
 ---
 title: "Create Your Blog"
 description: "Create a new blog post using our demo platform"
-layout: "create-blog"
-type: "create-blog"
+layout: "single"
 ---
 
 <div class="login-required" style="text-align: center; padding: 50px;">

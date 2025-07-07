@@ -20,12 +20,11 @@
 
     {{- partialCached "footer.html" . .Page -}}
 
-    {{- if site.Params.custom.includeDemoAuthJS }}
-    <script src="{{ "/js/demo-auth.js" | relURL }}"></script>
-    {{- end }}
+    <!-- Google OAuth Authentication -->
+    <script src="{{ "/js/google-auth.js" | relURL }}"></script>
     
-    {{- if and site.Params.custom.includeDemoDashboardJS (eq .Type "dashboard") }}
-    <script src="{{ "/js/demo-dashboard.js" | relURL }}"></script>
+    {{- if (eq .Type "dashboard") }}
+    <script src="{{ "/js/dashboard.js" | relURL }}"></script>
     {{- end }}
 </body>
 

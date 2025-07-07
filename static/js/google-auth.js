@@ -4,7 +4,9 @@
 class GoogleAuth {
     constructor() {
         this.clientId = '717968394179-ldu9da3rq27aridcm93gnjskujd5usv9.apps.googleusercontent.com'; // Google OAuth Client ID
-        this.redirectUri = window.location.origin + '/auth/callback/';
+        // Construct redirect URI properly for GitHub Pages
+        const basePath = window.location.pathname.includes('/parada-site/') ? '/parada-site' : '';
+        this.redirectUri = window.location.origin + basePath + '/auth/callback/';
         this.scope = 'openid email profile';
         
         this.currentUser = null;
@@ -17,8 +19,9 @@ class GoogleAuth {
         // Check for existing session
         this.loadSession();
         
-        // Handle OAuth callback
-        if (window.location.pathname === '/auth/callback/') {
+        // Handle OAuth callback (check both possible paths)
+        const currentPath = window.location.pathname;
+        if (currentPath === '/auth/callback/' || currentPath === '/parada-site/auth/callback/') {
             this.handleOAuthCallback();
         }
         
@@ -104,9 +107,10 @@ class GoogleAuth {
         this.updateAuthUI();
         
         // Redirect to homepage if on protected page
-        if (window.location.pathname.startsWith('/dashboard') || 
-            window.location.pathname.startsWith('/auth/')) {
-            window.location.href = '/';
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/dashboard') || currentPath.includes('/auth/')) {
+            const basePath = currentPath.includes('/parada-site/') ? '/parada-site/' : '/';
+            window.location.href = basePath;
         }
         
         this.showSuccess('Logged out successfully');
@@ -165,7 +169,8 @@ class GoogleAuth {
                     this.handleBlogCreationReturn();
                 } else {
                     // Redirect to dashboard on successful login
-                    window.location.href = '/dashboard/';
+                    const basePath = window.location.pathname.includes('/parada-site/') ? '/parada-site' : '';
+                    window.location.href = basePath + '/dashboard/';
                 }
                 
             } catch (error) {
@@ -309,7 +314,7 @@ class GoogleAuth {
                 <div class="google-user-menu">
                     <img src="${this.currentUser.picture}" alt="${this.currentUser.name}" class="google-user-avatar">
                     <span class="google-user-name">${this.currentUser.name}</span>
-                    <a href="/dashboard/" class="google-dashboard-btn">📊 Dashboard</a>
+                    <a href="${window.location.pathname.includes('/parada-site/') ? '/parada-site' : ''}/dashboard/" class="google-dashboard-btn">📊 Dashboard</a>
                     <button onclick="googleAuth.logout()" class="google-logout-btn">Logout</button>
                 </div>
             `;
@@ -356,7 +361,8 @@ class GoogleAuth {
 
     handleAuthState() {
         // Handle login requirements for protected pages
-        if (window.location.pathname.startsWith('/dashboard/') && !this.currentUser) {
+        const currentPath = window.location.pathname;
+        if ((currentPath.includes('/dashboard') || currentPath.endsWith('/dashboard/')) && !this.currentUser) {
             const main = document.querySelector('main') || document.querySelector('.main');
             if (main) {
                 main.innerHTML = `

@@ -1,0 +1,81 @@
+# Content Management API Configuration
+# Defines endpoints for managing blog content through GitHub API
+
+api_version: "v1"
+base_url: "https://api.github.com"
+repository: "Antonio-Parada/parada-site"
+
+endpoints:
+  # Content Management
+  create_post:
+    method: POST
+    path: "/repos/{owner}/{repo}/contents/sites/{tenant}/content/posts/{filename}.md"
+    description: "Create a new blog post"
+    authentication: "GitHub Token"
+    
+  update_post:
+    method: PUT
+    path: "/repos/{owner}/{repo}/contents/sites/{tenant}/content/posts/{filename}.md"
+    description: "Update existing blog post"
+    authentication: "GitHub Token"
+    
+  delete_post:
+    method: DELETE
+    path: "/repos/{owner}/{repo}/contents/sites/{tenant}/content/posts/{filename}.md"
+    description: "Delete a blog post"
+    authentication: "GitHub Token"
+    
+  list_posts:
+    method: GET
+    path: "/repos/{owner}/{repo}/contents/sites/{tenant}/content/posts"
+    description: "List all posts for a tenant"
+    authentication: "GitHub Token"
+    
+  # Media Management
+  upload_image:
+    method: PUT
+    path: "/repos/{owner}/{repo}/contents/sites/{tenant}/static/images/{filename}"
+    description: "Upload image for blog post"
+    authentication: "GitHub Token"
+    
+  # Site Management
+  trigger_build:
+    method: POST
+    path: "/repos/{owner}/{repo}/actions/workflows/deploy.yml/dispatches"
+    description: "Trigger site rebuild and deployment"
+    authentication: "GitHub Token"
+    
+  # Analytics
+  get_analytics:
+    method: GET
+    path: "/repos/{owner}/{repo}/traffic/views"
+    description: "Get site traffic analytics"
+    authentication: "GitHub Token"
+
+# Content validation rules
+validation:
+  post_frontmatter:
+    required_fields:
+      - title
+      - date
+      - draft
+    optional_fields:
+      - description
+      - tags
+      - categories
+      - author
+      - image
+      
+  filename_pattern: "^[a-z0-9-]+\\.md$"
+  max_file_size: "1MB"
+  allowed_file_types: [".md", ".jpg", ".png", ".gif", ".svg"]
+
+# Webhook configuration
+webhooks:
+  content_updated:
+    url: "https://blog.mypp.site/webhooks/content-updated"
+    events: ["push", "pull_request"]
+    
+  deployment_status:
+    url: "https://blog.mypp.site/webhooks/deployment-status"
+    events: ["deployment_status"]

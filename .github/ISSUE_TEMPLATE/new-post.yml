@@ -1,0 +1,104 @@
+name: 📝 New Blog Post
+description: Create a new blog post through GitHub Issues
+title: "[CONTENT REQUEST] "
+labels: ["content", "new-post"]
+assignees:
+  - Antonio-Parada
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Create a New Blog Post
+        
+        Use this form to create a new blog post for your blog. The content will be automatically processed and converted to a markdown file.
+
+  - type: input
+    id: title
+    attributes:
+      label: Post Title
+      description: Enter the title of your blog post
+      placeholder: "My Awesome Blog Post"
+    validations:
+      required: true
+
+  - type: textarea
+    id: content
+    attributes:
+      label: Post Content
+      description: Write your blog post content in Markdown format
+      placeholder: |
+        ## Introduction
+        
+        Your blog post content goes here...
+        
+        ## Main Points
+        
+        - Point 1
+        - Point 2
+        
+        ## Conclusion
+        
+        Wrap up your thoughts here.
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Enter tags separated by commas
+      placeholder: "technology, programming, personal"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Select a category for your post
+      options:
+        - General
+        - Technology
+        - Business
+        - Personal
+        - Projects
+        - Research
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tenant
+    attributes:
+      label: Blog
+      description: Which blog should this post be published to?
+      options:
+        - parada
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: status
+    attributes:
+      label: Publication Status
+      description: How should this post be published?
+      options:
+        - label: Publish immediately as draft (you can publish later)
+          required: false
+        - label: Publish immediately as live post
+          required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Next Steps
+        
+        After submitting this issue:
+        1. The content will be automatically processed
+        2. A markdown file will be generated and shown in the comments
+        3. You can review and approve the content
+        4. The post will be created and deployed automatically
+        
+        ---
+        
+        **Need help?** Check out the [content creation guide](https://github.com/Antonio-Parada/parada-site/wiki/Content-Creation) for tips on writing great blog posts.

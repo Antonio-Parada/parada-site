@@ -1,0 +1,59 @@
+# Multi-Tenant Blogging Platform Configuration
+# This file defines the platform structure and capabilities
+
+platform:
+  name: "Blog Platform"
+  description: "Multi-tenant blogging platform powered by Hugo and GitHub"
+  version: "2.0.0"
+  
+domains:
+  primary: "blog.mypp.site"
+  admin: "admin.blog.mypp.site"
+  
+features:
+  - multi_tenant_blogs
+  - github_integration
+  - automated_deployment
+  - content_management
+  - user_management
+  - analytics_integration
+  - seo_optimization
+  - comment_system
+  - social_sharing
+
+tenants:
+  parada:
+    name: "Antonio Parada"
+    description: "Personal blog and portfolio"
+    subdirectory: "/parada"
+    github_repo: "parada-site"
+    content_source: "sites/parada/content"
+    theme: "PaperMod"
+    features:
+      - posts
+      - portfolio
+      - about_page
+      - rss_feed
+    
+workflows:
+  content_publishing:
+    trigger: "push to main branch"
+    stages:
+      - content_validation
+      - site_building
+      - deployment
+      - cache_invalidation
+      
+  new_tenant_setup:
+    trigger: "manual"
+    stages:
+      - directory_creation
+      - config_setup
+      - theme_installation
+      - initial_content
+      
+administration:
+  content_management: "GitHub Issues"
+  user_management: "GitHub Teams"
+  deployment_monitoring: "GitHub Actions"
+  analytics: "GitHub Analytics + Custom"

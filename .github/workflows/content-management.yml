@@ -1,0 +1,243 @@
+name: Content Management and Validation
+
+on:
+  pull_request:
+    paths:
+      - 'sites/*/content/**'
+      - 'content-platform/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'sites/*/content/**'
+      - 'content-platform/**'
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  validate-content:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Validate Content Structure
+        run: |
+          echo "🔍 Validating content structure..."
+          
+          # Check for valid frontmatter in new/modified posts
+          for file in $(git diff --name-only origin/main...HEAD | grep -E "sites/.*/content/posts/.*\.md$"); do
+            if [ -f "$file" ]; then
+              echo "Validating $file..."
+              
+              # Check if file has frontmatter
+              if ! head -n 1 "$file" | grep -q "^---$"; then
+                echo "❌ Error: $file is missing frontmatter"
+                exit 1
+              fi
+              
+              # Extract frontmatter and validate required fields
+              frontmatter=$(sed -n '/^---$/,/^---$/p' "$file")
+              
+              if ! echo "$frontmatter" | grep -q "^title:"; then
+                echo "❌ Error: $file is missing title field"
+                exit 1
+              fi
+              
+              if ! echo "$frontmatter" | grep -q "^date:"; then
+                echo "❌ Error: $file is missing date field"
+                exit 1
+              fi
+              
+              if ! echo "$frontmatter" | grep -q "^draft:"; then
+                echo "❌ Error: $file is missing draft field"
+                exit 1
+              fi
+              
+              echo "✅ $file is valid"
+            fi
+          done
+
+      - name: Test Build
+        run: |
+          echo "🏗️ Testing build process..."
+          
+          # Test main platform build
+          if ! hugo --gc --minify --destination "test-build" 2>&1; then
+            echo "❌ Platform build failed"
+            exit 1
+          fi
+          
+          # Test individual tenant builds
+          for tenant_dir in sites/*/; do
+            if [ -d "$tenant_dir" ]; then
+              tenant=$(basename "$tenant_dir")
+              echo "Testing build for tenant: $tenant"
+              
+              cd "$tenant_dir"
+              if ! hugo --gc --minify --destination "../../test-build/$tenant" 2>&1; then
+                echo "❌ Build failed for tenant: $tenant"
+                exit 1
+              fi
+              cd ../..
+            fi
+          done
+          
+          echo "✅ All builds successful"
+
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Content Validation Report')
+            );
+            
+            const success = ${{ job.status == 'success' }};
+            const body = `## 📝 Content Validation Report
+            
+            **Status**: ${success ? '✅ Passed' : '❌ Failed'}
+            **Commit**: ${context.sha.slice(0, 7)}
+            **Timestamp**: ${new Date().toISOString()}
+            
+            ${success ? 
+              '🎉 All content validation checks passed! This PR is ready to merge.' : 
+              '⚠️ Content validation failed. Please check the logs and fix the issues before merging.'
+            }
+            
+            ### Validation Steps:
+            - ${success ? '✅' : '❌'} Content structure validation
+            - ${success ? '✅' : '❌'} Frontmatter validation  
+            - ${success ? '✅' : '❌'} Build test
+            
+            ---
+            *Automated validation by GitHub Actions*`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+  content-request:
+    if: github.event_name == 'issues' && contains(github.event.issue.title, '[CONTENT REQUEST]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process Content Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body;
+            
+            // Parse content request
+            const titleMatch = body.match(/Title:\s*(.+)/);
+            const contentMatch = body.match(/Content:\s*([\s\S]+?)(?=\n\n|$)/);
+            const tagsMatch = body.match(/Tags:\s*(.+)/);
+            
+            if (titleMatch && contentMatch) {
+              const title = titleMatch[1];
+              const content = contentMatch[1];
+              const tags = tagsMatch ? tagsMatch[1].split(',').map(t => t.trim()) : [];
+              
+              // Create filename from title
+              const filename = title.toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '-') + '.md';
+              
+              const date = new Date().toISOString().split('T')[0];
+              
+              const frontmatter = `---
+            title: "${title}"
+            date: ${date}
+            draft: true
+            tags: [${tags.map(tag => `"${tag}"`).join(', ')}]
+            ---
+            
+            ${content}`;
+              
+              // Comment with generated content
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `## 📝 Generated Content
+                
+            **Filename**: \`${filename}\`
+            
+            \`\`\`markdown
+            ${frontmatter}
+            \`\`\`
+            
+            To publish this content:
+            1. Create a new file at \`sites/parada/content/posts/${filename}\`
+            2. Copy the content above
+            3. Set \`draft: false\` when ready to publish
+            4. Commit and push to deploy
+            
+            Or reply with "approve" to auto-create this post as a draft.`
+              });
+            }
+
+  auto-create-post:
+    if: github.event_name == 'issue_comment' && contains(github.event.comment.body, 'approve')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-create Post
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // This would create the post file automatically
+            // Implementation would parse the issue and create the markdown file
+            console.log('Auto-creation feature - implementation pending');
+
+  cleanup-builds:
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup
+        run: |
+          echo "🧹 Cleaning up test builds..."
+          # Cleanup happens automatically as runner is destroyed

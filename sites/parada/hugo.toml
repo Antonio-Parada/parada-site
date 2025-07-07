@@ -8,7 +8,7 @@ canonifyURLs = true
 theme = 'PaperMod'
 
 # Content and static directories (relative to root)
-contentDir = '../../content'
+contentDir = '../../content-parada'
 staticDir = '../../static'
 layoutDir = '../../layouts'
 dataDir = '../../data'

@@ -7,6 +7,9 @@ relativeURLs = false
 canonifyURLs = true
 theme = 'PaperMod'
 
+# Platform-specific content
+contentDir = 'content-platform'
+
 # Enable multi-tenant features
 enableGitInfo = true
 
@@ -45,20 +48,15 @@ enableGitInfo = true
     url = '/'
     weight = 10
   [[menu.main]]
-    identifier = 'posts'
-    name = 'Posts'
-    url = '/posts/'
-    weight = 20
-  [[menu.main]]
-    identifier = 'tags'
-    name = 'Tags'
-    url = '/tags/'
-    weight = 30
-  [[menu.main]]
     identifier = 'create-blog'
     name = '✨ Create Blog'
     url = '/create-blog/'
-    weight = 40
+    weight = 20
+  [[menu.main]]
+    identifier = 'parada-blog'
+    name = '👤 Parada Blog'
+    url = '/parada/'
+    weight = 30
 
 [markup]
   [markup.goldmark]

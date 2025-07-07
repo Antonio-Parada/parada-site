@@ -19,9 +19,9 @@ class GoogleAuth {
         // Check for existing session
         this.loadSession();
         
-        // Handle OAuth callback (check both possible paths)
+        // Handle OAuth callback
         const currentPath = window.location.pathname;
-        if (currentPath === '/auth/callback/' || currentPath === '/parada-site/auth/callback/') {
+        if (currentPath.includes('/auth/callback')) {
             this.handleOAuthCallback();
         }
         

@@ -20,12 +20,12 @@
 
     {{- partialCached "footer.html" . .Page -}}
 
-    {{- if site.Params.custom.includeAuthJS }}
-    <script src="{{ "/js/auth.js" | relURL }}"></script>
+    {{- if site.Params.custom.includeDemoAuthJS }}
+    <script src="{{ "/js/demo-auth.js" | relURL }}"></script>
     {{- end }}
     
-    {{- if and site.Params.custom.includeDashboardJS (eq .Type "dashboard") }}
-    <script src="{{ "/js/dashboard.js" | relURL }}"></script>
+    {{- if and site.Params.custom.includeDemoDashboardJS (eq .Type "dashboard") }}
+    <script src="{{ "/js/demo-dashboard.js" | relURL }}"></script>
     {{- end }}
 </body>
 

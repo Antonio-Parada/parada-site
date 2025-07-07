@@ -138,36 +138,29 @@ class BlogAuth {
     }
 
     async exchangeCodeForToken(code) {
-        // Since we can't use client_secret in frontend, we'll use GitHub's device flow
-        // or a serverless function. For now, we'll use a GitHub Action as proxy
+        // For demo purposes, create a mock user session
+        // In production, this would exchange the code for a real token
         
         try {
-            // Trigger GitHub Action to exchange code for token
-            const response = await fetch(`https://api.github.com/repos/Antonio-Parada/parada-site/dispatches`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Authorization': `token ${await this.getAppToken()}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    event_type: 'oauth_exchange',
-                    client_payload: {
-                        code: code,
-                        user_agent: navigator.userAgent
-                    }
-                })
-            });
+            // Simulate a successful OAuth exchange
+            const mockUserData = {
+                id: 12345,
+                login: 'demo-user',
+                name: 'Demo User',
+                email: 'demo@example.com',
+                avatar_url: 'https://avatars.githubusercontent.com/u/12345?v=4',
+                bio: 'Demo user for blog platform testing'
+            };
             
-            if (!response.ok) {
-                throw new Error('Failed to initiate token exchange');
-            }
+            // Create a mock access token (in production, this would be real)
+            const mockToken = 'demo_token_' + Date.now();
             
-            // Poll for the result
-            await this.pollForAuthResult(code);
+            // Save session
+            this.saveSession(mockToken, mockUserData);
+            await this.registerUser(mockUserData);
             
         } catch (error) {
-            throw new Error('Token exchange failed: ' + error.message);
+            throw new Error('Authentication failed: ' + error.message);
         }
     }
 

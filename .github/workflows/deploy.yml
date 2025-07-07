@@ -8,6 +8,11 @@ on:
       - 'sites/**'
       - 'content-platform/**'
       - 'themes/**'
+      - 'static/**'
+      - 'layouts/**'
+      - 'hugo.toml'
+      - 'config.*'
+      - 'CNAME'
       - '.github/workflows/**'
   pull_request:
     branches:
@@ -15,6 +20,10 @@ on:
     paths:
       - 'sites/**'
       - 'content-platform/**'
+      - 'static/**'
+      - 'layouts/**'
+      - 'hugo.toml'
+      - 'config.*'
   workflow_dispatch:
     inputs:
       tenant:

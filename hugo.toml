@@ -1,5 +1,5 @@
 # Multi-tenant blog platform configuration
-baseURL = 'https://blog.mypp.site/'
+baseURL = 'https://antonio-parada.github.io/parada-site/'
 languageCode = 'en-us'
 title = 'Blog Platform | Create Your Own Blog'
 # GitHub Pages multi-tenant setup
@@ -10,10 +10,10 @@ theme = 'PaperMod'
 # Platform-specific content
 contentDir = 'content-platform'
 
-# Custom JavaScript for authentication (demo mode)
+# Custom JavaScript for authentication (Google OAuth + Debug)
 [params.custom]
-  includeDemoAuthJS = true
-  includeDemoDashboardJS = true
+  includeGoogleAuthJS = true
+  includeOAuthDebugJS = true
 
 # Enable multi-tenant features
 enableGitInfo = true

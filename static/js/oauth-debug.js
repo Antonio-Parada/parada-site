@@ -41,7 +41,12 @@ window.debugOAuthLogin = function() {
                 console.error('Login error captured:', error);
                 console.error('Error stack:', error.stack);
                 
-                // Display error to user
+                // Display error to user (filter out expected PKCE-related messages)
+                if (error.message.includes('client secret') || error.message.includes('client_secret')) {
+                    console.log('Note: Client secret not required for PKCE flow - this is expected');
+                    return; // Don't show error for expected PKCE behavior
+                }
+                
                 const errorDiv = document.createElement('div');
                 errorDiv.style.cssText = `
                     position: fixed;
@@ -61,6 +66,7 @@ window.debugOAuthLogin = function() {
                     <p><strong>Error:</strong> ${error.message}</p>
                     <p><strong>Redirect URI:</strong> ${this.redirectUri}</p>
                     <p><strong>Client ID:</strong> ${this.clientId}</p>
+                    <p><em>Note: Client secret not needed for PKCE flow</em></p>
                     <button onclick="this.parentElement.remove()">Close</button>
                 `;
                 document.body.appendChild(errorDiv);

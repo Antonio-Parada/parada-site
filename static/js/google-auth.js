@@ -233,6 +233,10 @@ class GoogleAuth {
         
         // Register user in our system
         await this.registerUser(userData);
+        
+        // Show success message
+        this.showSuccess('✅ Successfully authenticated with Google!');
+        console.log('OAuth flow completed successfully using PKCE (no client secret required)');
     }
 
     async registerUser(userData) {

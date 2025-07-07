@@ -55,8 +55,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --destination "../../public/parada" \
-            --baseURL "${{ steps.pages.outputs.base_url }}parada/"
+            --destination "../../public/parada"
           cd ../..
           
           # Create CNAME file for custom domain

@@ -5,8 +5,8 @@ class GoogleAuth {
     constructor() {
         this.clientId = '717968394179-ldu9da3rq27aridcm93gnjskujd5usv9.apps.googleusercontent.com'; // Google OAuth Client ID
         // Construct redirect URI properly for GitHub Pages
-        const basePath = window.location.pathname.includes('/parada-site/') ? '/parada-site' : '';
-        this.redirectUri = window.location.origin + basePath + '/auth/callback/';
+        this.redirectUri = this.constructRedirectUri();
+        console.log('OAuth redirect URI configured:', this.redirectUri);
         this.scope = 'openid email profile';
         
         this.currentUser = null;
@@ -539,6 +539,28 @@ Start writing and sharing your amazing content!
             'welcome, getting-started, first-post',
             'General'
         );
+    }
+
+    // URL Construction
+    constructRedirectUri() {
+        const hostname = window.location.hostname;
+        const origin = window.location.origin;
+        
+        // Detect environment and construct proper redirect URI
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            // Local development
+            return origin + '/auth/callback/';
+        } else if (hostname === 'antonio-parada.github.io') {
+            // GitHub Pages
+            return origin + '/parada-site/auth/callback/';
+        } else if (hostname.includes('mypp.site') || hostname.includes('blog.mypp.site')) {
+            // Custom domain
+            return origin + '/auth/callback/';
+        } else {
+            // Fallback - assume subdirectory deployment
+            const basePath = window.location.pathname.includes('/parada-site/') ? '/parada-site' : '';
+            return origin + basePath + '/auth/callback/';
+        }
     }
 
     // Utility methods

@@ -70,37 +70,62 @@
                 createdAt: new Date().toISOString()
             }));
             
-            // Try simple fetch without async/await
-            fetch('/.netlify/functions/create-blog', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Backend not available');
-                }
-            }).then(result => {
-                // Show success message
-                showSuccess(data);
-            }).catch(error => {
-                console.log('Backend unavailable, using OAuth flow:', error.message);
-                // Fall back to OAuth
-                if (typeof googleAuth !== 'undefined' && googleAuth.login) {
-                    localStorage.setItem('oauth_return_action', 'blog_creation');
-                    googleAuth.login();
-                } else {
-                    // Show local success
+            // Get user info from Google OAuth if available
+            let userInfo = null;
+            if (typeof googleAuth !== 'undefined' && googleAuth.currentUser) {
+                userInfo = googleAuth.currentUser;
+            }
+            
+            // Prepare payload with user info
+            const payload = {
+                ...data,
+                userInfo: userInfo
+            };
+            
+            // Use the new GitHub backend if available
+            if (typeof githubBackend !== 'undefined') {
+                githubBackend.submitBlogRequest(data).then(result => {
+                    if (result.success) {
+                        githubBackend.handleSuccess(result, data);
+                    } else {
+                        githubBackend.handleFailureWithFallback(result.error, data);
+                    }
+                }).finally(() => {
+                    // Reset button
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '🚀 Create My Blog';
+                        submitBtn.disabled = false;
+                    }
+                });
+            } else {
+                // Fallback to old method
+                fetch('/.netlify/functions/create-blog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Backend not available');
+                    }
+                }).then(result => {
                     showSuccess(data);
-                }
-            }).finally(() => {
-                // Reset button
-                if (submitBtn) {
-                    submitBtn.innerHTML = '🚀 Create My Blog';
-                    submitBtn.disabled = false;
-                }
-            });
+                }).catch(error => {
+                    console.log('Backend unavailable, using OAuth flow:', error.message);
+                    if (typeof googleAuth !== 'undefined' && googleAuth.login) {
+                        localStorage.setItem('oauth_return_action', 'blog_creation');
+                        googleAuth.login();
+                    } else {
+                        showSuccess(data);
+                    }
+                }).finally(() => {
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '🚀 Create My Blog';
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
         });
     }
     

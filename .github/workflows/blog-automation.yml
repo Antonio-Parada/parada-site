@@ -1,0 +1,349 @@
+name: Blog Creation Automation
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-blog:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'blog-request')
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Hugo
+      run: |
+        wget https://github.com/gohugoio/hugo/releases/download/v0.121.0/hugo_extended_0.121.0_linux-amd64.deb
+        sudo dpkg -i hugo_extended_0.121.0_linux-amd64.deb
+
+    - name: Parse issue for blog details
+      id: parse-issue
+      run: |
+        # Extract details from issue body
+        ISSUE_BODY="${{ github.event.issue.body }}"
+        
+        # Extract username (between backticks after "Username:")
+        USERNAME=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Username\*\*: `)[^`]+')
+        
+        # Extract blog title
+        BLOG_TITLE=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Blog Title\*\*: )[^\n]+')
+        
+        # Extract email
+        EMAIL=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Email\*\*: )[^\n]+')
+        
+        # Extract theme
+        THEME=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Theme\*\*: )[^\n]+')
+        
+        # Extract description
+        DESCRIPTION=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Description\*\*: )[^\n]+')
+        
+        echo "username=$USERNAME" >> $GITHUB_OUTPUT
+        echo "blog_title=$BLOG_TITLE" >> $GITHUB_OUTPUT
+        echo "email=$EMAIL" >> $GITHUB_OUTPUT
+        echo "theme=$THEME" >> $GITHUB_OUTPUT
+        echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+        
+        echo "Parsed blog details:"
+        echo "Username: $USERNAME"
+        echo "Blog Title: $BLOG_TITLE"
+        echo "Email: $EMAIL"
+        echo "Theme: $THEME"
+
+    - name: Validate blog request
+      id: validate
+      run: |
+        USERNAME="${{ steps.parse-issue.outputs.username }}"
+        
+        # Check if username is valid
+        if [[ ! "$USERNAME" =~ ^[a-z0-9-]{3,20}$ ]]; then
+          echo "error=Invalid username format" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        # Check if username already exists
+        if [ -d "sites/$USERNAME" ] || [ -d "content-$USERNAME" ]; then
+          echo "error=Username already exists" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        # Check reserved usernames
+        RESERVED=("admin" "api" "www" "blog" "mail" "ftp" "root" "test" "demo" "parada")
+        for reserved in "${RESERVED[@]}"; do
+          if [ "$USERNAME" = "$reserved" ]; then
+            echo "error=Username is reserved" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        done
+        
+        echo "validation=passed" >> $GITHUB_OUTPUT
+
+    - name: Create blog structure
+      if: steps.validate.outputs.validation == 'passed'
+      run: |
+        USERNAME="${{ steps.parse-issue.outputs.username }}"
+        BLOG_TITLE="${{ steps.parse-issue.outputs.blog_title }}"
+        EMAIL="${{ steps.parse-issue.outputs.email }}"
+        THEME="${{ steps.parse-issue.outputs.theme }}"
+        DESCRIPTION="${{ steps.parse-issue.outputs.description }}"
+        
+        echo "Creating blog structure for: $USERNAME"
+        
+        # Create site directory
+        mkdir -p "sites/$USERNAME"
+        
+        # Create content directory
+        mkdir -p "content-$USERNAME/posts"
+        
+        # Create Hugo config for the user
+        cat > "sites/$USERNAME/hugo.toml" << EOF
+        baseURL = "https://blog.mypp.site/$USERNAME/"
+        languageCode = "en-us"
+        title = "$BLOG_TITLE"
+        theme = "PaperMod"
+        
+        [params]
+          author = "$EMAIL"
+          description = "$DESCRIPTION"
+          ShowReadingTime = true
+          ShowShareButtons = true
+          ShowPostNavLinks = true
+          ShowBreadCrumbs = true
+          ShowCodeCopyButtons = true
+          ShowWordCount = true
+          ShowRssButtonInSectionTermList = true
+          UseHugoToc = true
+          disableSpecial1stPost = false
+          disableScrollToTop = false
+          comments = false
+          hidemeta = false
+          hideSummary = false
+          showtoc = false
+          tocopen = false
+        
+        [params.homeInfoParams]
+          Title = "Welcome to $BLOG_TITLE"
+          Content = "$DESCRIPTION"
+        
+        [[params.socialIcons]]
+          name = "email"
+          url = "mailto:$EMAIL"
+        
+        [menu]
+        [[menu.main]]
+          identifier = "home"
+          name = "Home"
+          url = "/"
+          weight = 10
+        
+        [[menu.main]]
+          identifier = "posts"
+          name = "Posts"
+          url = "/posts/"
+          weight = 20
+        
+        [[menu.main]]
+          identifier = "about"
+          name = "About"
+          url = "/about/"
+          weight = 30
+        EOF
+        
+        # Create homepage
+        cat > "content-$USERNAME/_index.md" << EOF
+        ---
+        title: "$BLOG_TITLE"
+        description: "$DESCRIPTION"
+        ---
+        
+        # Welcome to $BLOG_TITLE
+        
+        $DESCRIPTION
+        
+        ## Latest Posts
+        
+        Check out my latest thoughts and writings below.
+        EOF
+        
+        # Create about page
+        cat > "content-$USERNAME/about.md" << EOF
+        ---
+        title: "About"
+        date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        draft: false
+        ---
+        
+        # About Me
+        
+        Welcome to my blog! This is where I share my thoughts, experiences, and insights.
+        
+        ## Contact
+        
+        Feel free to reach out to me at: $EMAIL
+        EOF
+        
+        # Create welcome post
+        cat > "content-$USERNAME/posts/welcome.md" << EOF
+        ---
+        title: "Welcome to $BLOG_TITLE!"
+        date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        draft: false
+        tags: ["welcome", "first-post"]
+        categories: ["General"]
+        author: "$EMAIL"
+        ---
+        
+        # Welcome to $BLOG_TITLE!
+        
+        This is your first blog post! 🎉
+        
+        ## Getting Started
+        
+        Your blog is now live and ready for content. Here are some things you can do:
+        
+        - **Write new posts** using Markdown
+        - **Customize your content** with frontmatter
+        - **Share your thoughts** with the world
+        - **Build your audience** with regular updates
+        
+        ## About Your Blog
+        
+        - **Blog URL**: \`blog.mypp.site/$USERNAME\`
+        - **Created**: $(date -u +"%Y-%m-%d")
+        - **Theme**: $THEME
+        
+        Start writing and sharing your amazing content!
+        
+        ---
+        
+        *This post was automatically created when you set up your blog. Feel free to edit or delete it.*
+        EOF
+        
+        # Update main site navigation (if needed)
+        echo "Blog structure created successfully!"
+
+    - name: Test Hugo build
+      if: steps.validate.outputs.validation == 'passed'
+      run: |
+        USERNAME="${{ steps.parse-issue.outputs.username }}"
+        
+        # Test the build
+        cd "sites/$USERNAME"
+        hugo --contentDir "../../content-$USERNAME" --destination "../../public/$USERNAME" --minify
+        
+        echo "Hugo build successful for $USERNAME"
+
+    - name: Commit and create PR
+      if: steps.validate.outputs.validation == 'passed'
+      run: |
+        USERNAME="${{ steps.parse-issue.outputs.username }}"
+        BLOG_TITLE="${{ steps.parse-issue.outputs.blog_title }}"
+        
+        # Configure git
+        git config user.name "Blog Automation Bot"
+        git config user.email "action@github.com"
+        
+        # Create new branch
+        BRANCH_NAME="blog-creation/$USERNAME"
+        git checkout -b "$BRANCH_NAME"
+        
+        # Add files
+        git add "sites/$USERNAME/"
+        git add "content-$USERNAME/"
+        git add "public/$USERNAME/" || true
+        
+        # Commit changes
+        git commit -m "✨ Create blog for $USERNAME: $BLOG_TITLE
+
+        - Added Hugo configuration
+        - Created content directory structure  
+        - Generated welcome post and about page
+        - Built static files
+        
+        Closes #${{ github.event.issue.number }}"
+        
+        # Push branch
+        git push origin "$BRANCH_NAME"
+        
+        # Create PR using GitHub CLI
+        gh pr create \
+          --title "🚀 New Blog: $BLOG_TITLE ($USERNAME)" \
+          --body "This PR creates a new blog for **$USERNAME**.
+
+        ## Changes
+        - ✅ Created blog configuration in \`sites/$USERNAME/\`
+        - ✅ Set up content directory \`content-$USERNAME/\`  
+        - ✅ Generated welcome post and about page
+        - ✅ Built and tested Hugo site
+        
+        ## Blog Details
+        - **Username**: \`$USERNAME\`
+        - **Title**: $BLOG_TITLE
+        - **URL**: https://blog.mypp.site/$USERNAME/
+        
+        ## Review Checklist
+        - [ ] Username is appropriate
+        - [ ] Content looks good
+        - [ ] Hugo build successful
+        - [ ] Ready to deploy
+        
+        Resolves #${{ github.event.issue.number }}" \
+          --head "$BRANCH_NAME" \
+          --base "main"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update issue with success
+      if: steps.validate.outputs.validation == 'passed'
+      run: |
+        USERNAME="${{ steps.parse-issue.outputs.username }}"
+        
+        gh issue comment ${{ github.event.issue.number }} --body "✅ **Blog creation successful!**
+        
+        Your blog has been created and a pull request has been opened for review.
+        
+        **Next Steps:**
+        1. The PR will be reviewed and merged
+        2. Your blog will be deployed automatically
+        3. You'll be able to access it at: \`https://blog.mypp.site/$USERNAME/\`
+        
+        **Estimated time until live:** 15-30 minutes
+        
+        Thank you for joining the platform! 🎉"
+        
+        # Add success label
+        gh issue edit ${{ github.event.issue.number }} --add-label "✅ completed"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Handle validation failure
+      if: failure() && steps.validate.outputs.error
+      run: |
+        ERROR="${{ steps.validate.outputs.error }}"
+        
+        gh issue comment ${{ github.event.issue.number }} --body "❌ **Blog creation failed**
+        
+        **Error:** $ERROR
+        
+        Please check the following:
+        - Username must be 3-20 characters (lowercase letters, numbers, hyphens only)
+        - Username must not already exist
+        - Username must not be reserved
+        
+        Please create a new request with a different username."
+        
+        # Add failure label
+        gh issue edit ${{ github.event.issue.number }} --add-label "❌ failed"
+        
+        # Close the issue
+        gh issue close ${{ github.event.issue.number }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

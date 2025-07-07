@@ -83,16 +83,32 @@ jobs:
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}"
           
-          # Build Parada's personal blog (personal content only)
-          cd sites/parada
-          hugo \
-            --gc \
-            --minify \
-            --destination "../../public/parada"
-          cd ../..
+          # Build all user blogs
+          for user_dir in sites/*/; do
+            if [ -d "$user_dir" ]; then
+              username=$(basename "$user_dir")
+              echo "Building blog for user: $username"
+              
+              cd "$user_dir"
+              if [ -f "hugo.toml" ] || [ -f "config.toml" ] || [ -f "config.yaml" ] || [ -f "config.yml" ]; then
+                hugo \
+                  --gc \
+                  --minify \
+                  --destination "../../public/$username" \
+                  --baseURL "https://blog.mypp.site/$username/"
+                echo "✅ Built blog for: $username"
+              else
+                echo "⚠️  No Hugo config found for: $username"
+              fi
+              cd ../..
+            fi
+          done
           
           # Create CNAME file for custom domain
           echo "blog.mypp.site" > public/CNAME
+          
+          # Create index file listing all blogs if needed
+          echo "Built sites: $(ls -1 public/ | grep -v CNAME | tr '\n' ' ')"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

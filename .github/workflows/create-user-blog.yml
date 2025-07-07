@@ -1,0 +1,390 @@
+name: Create User Blog
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  validate-blog-request:
+    if: github.event_name == 'issues' && contains(github.event.issue.title, '[BLOG REQUEST]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse Blog Request
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body;
+            
+            // Parse form data from issue body
+            const parseField = (fieldName) => {
+              const regex = new RegExp(`### ${fieldName}\\s*\\n\\s*([^\\n]+)`, 'i');
+              const match = body.match(regex);
+              return match ? match[1].trim() : '';
+            };
+            
+            const username = parseField('Username');
+            const email = parseField('Email Address');
+            const blogTitle = parseField('Blog Title');
+            const description = parseField('Blog Description');
+            const theme = parseField('Theme');
+            
+            // Validate username format
+            const usernameRegex = /^[a-z0-9-]{3,20}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            const errors = [];
+            
+            if (!username || !usernameRegex.test(username)) {
+              errors.push('❌ Username must be 3-20 characters: lowercase letters, numbers, hyphens only');
+            }
+            
+            if (!email || !emailRegex.test(email)) {
+              errors.push('❌ Invalid email address format');
+            }
+            
+            if (!blogTitle || blogTitle.length < 1) {
+              errors.push('❌ Blog title is required');
+            }
+            
+            // Check for reserved usernames
+            const reserved = ['admin', 'api', 'www', 'blog', 'mail', 'ftp', 'root', 'test', 'demo', 'parada'];
+            if (reserved.includes(username.toLowerCase())) {
+              errors.push('❌ Username is reserved');
+            }
+            
+            // Store parsed data for next job
+            core.setOutput('username', username);
+            core.setOutput('email', email);
+            core.setOutput('blogTitle', blogTitle);
+            core.setOutput('description', description);
+            core.setOutput('theme', theme);
+            core.setOutput('valid', errors.length === 0);
+            core.setOutput('errors', errors.join('\n'));
+            
+            // Comment with validation results
+            const validationComment = errors.length === 0 
+              ? `## ✅ Blog Request Validated
+              
+**Username**: \`${username}\`
+**Email**: \`${email}\`
+**Blog Title**: ${blogTitle}
+**Theme**: ${theme}
+
+Your request looks good! 🎉
+
+**Next Steps:**
+1. We'll check if the username is available
+2. If available, your blog will be created automatically
+3. You'll receive another comment with your blog URL
+
+*Processing...*`
+              : `## ❌ Validation Failed
+
+Please fix the following issues:
+
+${errors.join('\n')}
+
+Once fixed, edit this issue and we'll re-validate automatically.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: validationComment
+            });
+
+      - name: Check Username Availability
+        if: steps.parse.outputs.valid == 'true'
+        id: availability
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const username = '${{ steps.parse.outputs.username }}';
+            
+            // Check if directory already exists
+            try {
+              await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path: `sites/${username}`
+              });
+              
+              // If we get here, directory exists
+              core.setOutput('available', 'false');
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `## ❌ Username Not Available
+
+The username \`${username}\` is already taken. Please choose a different username and edit this issue.
+
+**Suggestions:**
+- \`${username}-blog\`
+- \`${username}2024\`
+- \`${username}-writes\`
+
+Edit the issue above to try again with a new username.`
+              });
+              
+            } catch (error) {
+              if (error.status === 404) {
+                // Directory doesn't exist, username is available
+                core.setOutput('available', 'true');
+              } else {
+                throw error;
+              }
+            }
+
+      - name: Create User Blog
+        if: steps.parse.outputs.valid == 'true' && steps.availability.outputs.available == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const username = '${{ steps.parse.outputs.username }}';
+            const email = '${{ steps.parse.outputs.email }}';
+            const blogTitle = '${{ steps.parse.outputs.blogTitle }}';
+            const description = '${{ steps.parse.outputs.description }}';
+            const themeRaw = '${{ steps.parse.outputs.theme }}';
+            
+            // Extract theme name
+            const theme = themeRaw.includes('PaperMod') ? 'PaperMod' : 
+                         themeRaw.includes('Ananke') ? 'Ananke' : 'Hugo Theme';
+            
+            const date = new Date().toISOString().split('T')[0];
+            
+            // Create Hugo config for user
+            const hugoConfig = `baseURL = 'https://blog.mypp.site/${username}/'
+languageCode = 'en-us'
+title = '${blogTitle}'
+theme = '${theme}'
+relativeURLs = false
+canonifyURLs = true
+
+[params]
+  env = 'production'
+  description = '${description || `${blogTitle} - Personal blog`}'
+  author = '${username}'
+  ShowReadingTime = true
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  hidePlatformBanner = true
+
+[menu]
+  [[menu.main]]
+    identifier = 'home'
+    name = 'Home'
+    url = '/${username}/'
+    weight = 10
+  [[menu.main]]
+    identifier = 'posts'
+    name = 'Posts'
+    url = '/${username}/posts/'
+    weight = 20
+  [[menu.main]]
+    identifier = 'about'
+    name = 'About'
+    url = '/${username}/about/'
+    weight = 30
+  [[menu.main]]
+    identifier = 'platform'
+    name = '🏠 Platform'
+    url = '/'
+    weight = 40
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    noClasses = false
+    codeFences = true
+    guessSyntax = true
+    lineNos = true
+    style = 'github'`;
+
+            // Create welcome post
+            const welcomePost = `---
+title: "Welcome to My Blog!"
+date: ${date}
+draft: false
+tags: ["welcome", "first-post"]
+author: "${username}"
+---
+
+# Welcome to my blog! 🎉
+
+This is my first post on the blog platform. I'm excited to start sharing my thoughts and ideas here.
+
+## What you can expect
+
+- Regular updates about my interests
+- Tutorials and how-to guides  
+- Personal reflections and experiences
+
+Thanks for visiting, and I hope you enjoy reading my content!
+
+---
+
+*This blog is hosted on the [Blog Platform](https://blog.mypp.site). Want to create your own? [Get started here](/create-blog)!*`;
+
+            // Create about page
+            const aboutPage = `---
+title: "About Me"
+date: ${date}
+draft: false
+---
+
+# About Me
+
+Hello! I'm **${username}** and this is my personal blog.
+
+## A bit about me
+
+${description || '[Add your personal information here]'}
+
+## Get in touch
+
+Feel free to reach out if you'd like to connect!
+
+---
+
+*This blog is part of the [Blog Platform](https://blog.mypp.site).*`;
+
+            // Create all files using GitHub API
+            const files = [
+              {
+                path: `sites/${username}/hugo.toml`,
+                content: hugoConfig
+              },
+              {
+                path: `sites/${username}/content/posts/welcome.md`,
+                content: welcomePost
+              },
+              {
+                path: `sites/${username}/content/about.md`, 
+                content: aboutPage
+              },
+              {
+                path: `sites/${username}/content/_index.md`,
+                content: `---
+title: "${blogTitle}"
+description: "${description || `${blogTitle} - Personal blog`}"
+---
+
+# ${blogTitle}
+
+${description || 'Welcome to my personal blog!'}
+
+## Latest Posts
+
+Check out my recent posts below, or explore the archives for more content.`
+              }
+            ];
+            
+            // Create files one by one
+            for (const file of files) {
+              try {
+                await github.rest.repos.createOrUpdateFileContents({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  path: file.path,
+                  message: `Create blog for user: ${username}`,
+                  content: Buffer.from(file.content).toString('base64'),
+                  committer: {
+                    name: 'Blog Platform Bot',
+                    email: 'bot@blog.mypp.site'
+                  }
+                });
+                console.log(`Created: ${file.path}`);
+              } catch (error) {
+                console.error(`Failed to create ${file.path}:`, error);
+              }
+            }
+            
+            // Add success comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🎉 Blog Created Successfully!
+
+Your blog has been created and will be available shortly at:
+
+**🌐 Blog URL**: https://blog.mypp.site/${username}/
+
+### What's been set up:
+
+✅ **Hugo Configuration**: Customized for your blog  
+✅ **Welcome Post**: Your first blog post is ready  
+✅ **About Page**: Placeholder page for your information  
+✅ **Navigation Menu**: Ready-to-use menu structure  
+✅ **Theme**: ${theme} theme applied  
+
+### Next Steps:
+
+1. **Wait for deployment** (2-5 minutes): GitHub will automatically build and deploy your blog
+2. **Visit your blog**: Check out https://blog.mypp.site/${username}/
+3. **Start writing**: Add new posts by creating files in \`sites/${username}/content/posts/\`
+4. **Customize**: Edit your about page and site configuration
+
+### How to add new posts:
+
+1. Create a new file: \`sites/${username}/content/posts/your-post-title.md\`
+2. Add frontmatter and content (see the welcome post as an example)
+3. Commit and push - your post will be live in minutes!
+
+**Welcome to the platform!** 🚀
+
+---
+
+*Closing this issue as completed. Feel free to open new issues for support or questions.*`
+            });
+            
+            // Close and label the issue
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed',
+              labels: ['blog-creation', 'completed']
+            });
+
+  handle-approval:
+    if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '/approve') && github.event.issue.user.login != github.event.comment.user.login
+    runs-on: ubuntu-latest
+    steps:
+      - name: Manual Approval Process
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // This handles manual approval by maintainers
+            // Trigger the blog creation workflow
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '✅ **Manual approval received!** Processing blog creation...'
+            });
+            
+            // Reopen issue to trigger the creation workflow
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'open',
+              labels: ['blog-creation', 'approved']
+            });

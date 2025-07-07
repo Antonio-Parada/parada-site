@@ -5,18 +5,54 @@ layout: "platform-home"
 hidePlatformBanner: false
 ---
 
-# Welcome to Our Blogging Platform
+# 🚀 Create Your Own Blog Today!
 
-A modern, cloud-based blogging platform that enables multiple users to create and manage their own blogs with ease.
+Join our modern blogging platform where you can create and manage your own blog at `blog.mypp.site/[your-username]`
 
-## 🚀 Platform Features
+<div style="text-align: center; margin: 40px 0; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
+    <h2 style="margin-top: 0; color: white;">✨ Start Your Blogging Journey</h2>
+    <p style="font-size: 18px; margin: 20px 0;">Create your personal blog in minutes, not hours!</p>
+    <a href="/create-blog/" style="
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 15px 40px;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: transform 0.2s;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        🎯 Create My Blog Now
+    </a>
+    <p style="margin: 15px 0 0 0; font-size: 14px; opacity: 0.9;">Free • Fast Setup • Professional Results</p>
+</div>
 
-- **Multi-Tenant Architecture**: Multiple blogs under one platform
-- **GitHub Integration**: Content management through Git
-- **Automated Deployment**: Push to publish workflow
-- **SEO Optimized**: Built-in SEO best practices
-- **Mobile Responsive**: Works perfectly on all devices
-- **Fast & Secure**: Static site generation for optimal performance
+## 🌟 Why Choose Our Platform?
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0;">
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 15px;">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>Static site generation for blazing fast load times</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 15px;">🔧</div>
+        <h3>Easy Management</h3>
+        <p>Simple content creation with markdown support</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 15px;">🎨</div>
+        <h3>Beautiful Themes</h3>
+        <p>Professional themes that look great on all devices</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 15px;">🌐</div>
+        <h3>Custom URLs</h3>
+        <p>Your own space at blog.mypp.site/[username]</p>
+    </div>
+</div>
 
 ## 📚 Published Blogs
 

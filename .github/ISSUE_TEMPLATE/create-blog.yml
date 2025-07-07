@@ -1,0 +1,92 @@
+name: 🚀 Create New User Blog
+description: Request a new blog to be created on the platform
+title: "[BLOG REQUEST] Create blog for: "
+labels: ["blog-creation", "pending-review"]
+assignees: 
+  - Antonio-Parada
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Welcome! 🎉
+        
+        Thank you for your interest in creating a blog on our platform! 
+        Please fill out the information below and we'll set up your blog within 24 hours.
+        
+  - type: input
+    id: username
+    attributes:
+      label: "Username"
+      description: "Your desired username (3-20 characters, lowercase letters, numbers, hyphens only)"
+      placeholder: "john-doe"
+    validations:
+      required: true
+      
+  - type: input
+    id: email
+    attributes:
+      label: "Email Address"
+      description: "Your email address for notifications and account management"
+      placeholder: "john@example.com"
+    validations:
+      required: true
+      
+  - type: input
+    id: blog_title
+    attributes:
+      label: "Blog Title"
+      description: "The title of your blog"
+      placeholder: "John's Tech Blog"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: "Blog Description"
+      description: "A brief description of your blog (optional)"
+      placeholder: "A blog about technology, programming, and my personal journey..."
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: theme
+    attributes:
+      label: "Theme"
+      description: "Choose your blog theme"
+      options:
+        - PaperMod (Modern, clean design)
+        - Ananke (Simple, readable)
+        - Hugo Theme (Classic)
+      default: 0
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: "Terms and Conditions"
+      description: "Please confirm your agreement"
+      options:
+        - label: "I agree to the platform's terms of service"
+          required: true
+        - label: "I understand this is a free service with best-effort support"
+          required: true
+        - label: "I will use appropriate content and follow community guidelines"
+          required: true
+          
+  - type: markdown
+    attributes:
+      value: |
+        ## What happens next?
+        
+        1. **Review**: We'll review your request within 24 hours
+        2. **Creation**: If approved, your blog will be automatically created
+        3. **Notification**: You'll receive a comment with your blog URL and instructions
+        4. **Access**: You can start creating content immediately
+        
+        Your blog will be available at: `https://blog.mypp.site/[your-username]/`
+        
+        ---
+        
+        **Questions?** Feel free to ask in the comments below!

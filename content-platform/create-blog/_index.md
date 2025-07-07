@@ -34,9 +34,9 @@ layout: "single"
 
 <div class="auth-required create-blog-content" style="display: none;">
     
-# ✍️ Create Your Blog Post
+# 🚀 Create Your Blog
 
-Welcome to the blog creation page! Here you can write and publish new blog posts using our demo platform.
+Welcome! Here you can create your own blog on our platform. Your blog will be available at `blog.mypp.site/[your-username]` within minutes of creation.
 
 <div class="create-blog-form" style="max-width: 800px; margin: 0 auto; padding: 20px;">
     

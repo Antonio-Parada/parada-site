@@ -83,7 +83,7 @@ if (Test-Path "static/js/google-auth.js") {
     }
     
     # Extract client ID
-    if ($authJs -match "clientId = '([^']+)'") {
+    if ($authJs -match 'clientId = ''([^'']+)''') {
         $clientId = $matches[1]
         Write-Host "✅ OAuth Client ID configured: $($clientId.Substring(0,20))..." -ForegroundColor Green
     } else {

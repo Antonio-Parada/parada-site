@@ -13,6 +13,7 @@ staticDir = '../../static'
 layoutDir = '../../layouts'
 dataDir = '../../data'
 themesDir = '../../themes'
+assetDir = '../../assets'
 
 # Build settings
 enableGitInfo = true

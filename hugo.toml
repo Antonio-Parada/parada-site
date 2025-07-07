@@ -4,7 +4,7 @@ languageCode = 'en-us'
 title = 'Blog Platform | Create Your Own Blog'
 # GitHub Pages multi-tenant setup
 relativeURLs = false
-canonifyURLs = true
+canonifyURLs = false
 theme = 'PaperMod'
 
 # Platform-specific content

@@ -4,7 +4,7 @@ languageCode = 'en-us'
 title = "Parada's Blog"
 # Multi-tenant blog setup
 relativeURLs = false
-canonifyURLs = true
+canonifyURLs = false
 theme = 'PaperMod'
 
 # Content and static directories (relative to root)
@@ -57,27 +57,27 @@ enableGitInfo = true
   [[menu.main]]
     identifier = 'home'
     name = 'Home'
-    url = '/parada/'
+    url = '/'
     weight = 10
   [[menu.main]]
     identifier = 'posts'
     name = 'Posts'
-    url = '/parada/posts/'
+    url = '/posts/'
     weight = 20
   [[menu.main]]
     identifier = 'tags'
     name = 'Tags'
-    url = '/parada/tags/'
+    url = '/tags/'
     weight = 30
   [[menu.main]]
     identifier = 'about'
     name = 'About'
-    url = '/parada/about/'
+    url = '/about/'
     weight = 40
   [[menu.main]]
     identifier = 'platform'
     name = '🏠 Platform'
-    url = '/'
+    url = 'https://blog.mypp.site/'
     weight = 50
 
 [markup]

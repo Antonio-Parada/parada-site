@@ -146,8 +146,8 @@ document.getElementById('createBlogForm').addEventListener('submit', async funct
     submitBtn.disabled = true;
     
     try {
-        // In a real implementation, this would call your backend API
-        const response = await fetch('/api/create-blog', {
+        // Call Netlify Function backend
+        const response = await fetch('/.netlify/functions/create-blog', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -155,22 +155,23 @@ document.getElementById('createBlogForm').addEventListener('submit', async funct
             body: JSON.stringify(data)
         });
         
-        if (response.ok) {
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
             // Show success message
             document.getElementById('createBlogForm').style.display = 'none';
             document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('blogUrl').textContent = `blog.mypp.site/${username}`;
+            document.getElementById('blogUrl').textContent = result.blogUrl;
+            
+            // Update success message with backend response
+            document.querySelector('#successMessage h3').textContent = 'Blog Request Submitted!';
+            document.querySelector('#successMessage p').textContent = result.message;
         } else {
-            const error = await response.json();
-            alert(`Error: ${error.message || 'Failed to create blog'}`);
+            alert(`Error: ${result.error || 'Failed to create blog'}`);
         }
     } catch (error) {
-        // For demo purposes, show success after 2 seconds
-        setTimeout(() => {
-            document.getElementById('createBlogForm').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('blogUrl').textContent = `blog.mypp.site/${username}`;
-        }, 2000);
+        console.error('Form submission error:', error);
+        alert('Network error. Please check your connection and try again.');
     }
     
     // Reset button

@@ -1,0 +1,26 @@
+[build]
+  publish = "public"
+  command = "hugo --gc --minify"
+
+[build.environment]
+  HUGO_VERSION = "0.147.9"
+  HUGO_ENV = "production"
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# For single page application behavior on user blogs
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin"]}
+
+[context.production.environment]
+  HUGO_ENVIRONMENT = "production"
+  HUGO_ENV = "production"

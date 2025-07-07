@@ -158,8 +158,15 @@ class GoogleAuth {
                 
                 await this.exchangeCodeForToken(code);
                 
-                // Redirect to dashboard on successful login
-                window.location.href = '/dashboard/';
+                // Check if user came from blog creation
+                const returnAction = localStorage.getItem('oauth_return_action');
+                if (returnAction === 'blog_creation') {
+                    localStorage.removeItem('oauth_return_action');
+                    this.handleBlogCreationReturn();
+                } else {
+                    // Redirect to dashboard on successful login
+                    window.location.href = '/dashboard/';
+                }
                 
             } catch (error) {
                 console.error('OAuth callback error:', error);
@@ -437,6 +444,95 @@ ${content}`;
         const filteredPosts = posts.filter(post => post.filename !== filename);
         localStorage.setItem('user_posts', JSON.stringify(filteredPosts));
         this.showSuccess('Post deleted successfully!');
+    }
+
+    // Handle blog creation after OAuth
+    handleBlogCreationReturn() {
+        const pendingBlogData = localStorage.getItem('pending_blog_creation');
+        if (pendingBlogData) {
+            try {
+                const blogData = JSON.parse(pendingBlogData);
+                localStorage.removeItem('pending_blog_creation');
+                
+                // Complete blog creation with authenticated user
+                this.completeBlogCreation(blogData);
+            } catch (error) {
+                console.error('Error processing blog creation:', error);
+                window.location.href = '/dashboard/';
+            }
+        } else {
+            // No pending blog data, go to dashboard
+            window.location.href = '/dashboard/';
+        }
+    }
+    
+    async completeBlogCreation(blogData) {
+        try {
+            // Merge blog data with user info
+            const completeBlogInfo = {
+                ...blogData,
+                userId: this.currentUser.id,
+                userEmail: this.currentUser.email,
+                userName: this.currentUser.name,
+                userAvatar: this.currentUser.picture,
+                status: 'created',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Store blog info
+            localStorage.setItem('user_blog_info', JSON.stringify(completeBlogInfo));
+            
+            // Create welcome post
+            await this.createWelcomePost(blogData.blogTitle, blogData.username);
+            
+            // Show success and redirect to dashboard
+            this.showSuccess(`🎉 Blog "${blogData.blogTitle}" created successfully!`);
+            
+            setTimeout(() => {
+                window.location.href = '/dashboard/';
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error completing blog creation:', error);
+            this.showError('Blog creation completed, but there was an issue setting up initial content.');
+            setTimeout(() => {
+                window.location.href = '/dashboard/';
+            }, 3000);
+        }
+    }
+    
+    async createWelcomePost(blogTitle, username) {
+        const welcomeContent = `# Welcome to ${blogTitle}!
+
+Congratulations on creating your new blog! This is your first post.
+
+## Getting Started
+
+Your blog is now live and ready for content. Here are some things you can do:
+
+- **Write new posts** using the dashboard
+- **Customize your content** with Markdown formatting
+- **Share your thoughts** with the world
+- **Build your audience** with regular updates
+
+## About Your Blog
+
+- **Blog URL**: \`blog.mypp.site/${username}\`
+- **Created**: ${new Date().toLocaleDateString()}
+- **Author**: ${this.currentUser.name}
+
+Start writing and sharing your amazing content!
+
+---
+
+*This post was automatically created when you set up your blog. Feel free to edit or delete it.*`;
+        
+        return await this.createPost(
+            `Welcome to ${blogTitle}!`,
+            welcomeContent,
+            'welcome, getting-started, first-post',
+            'General'
+        );
     }
 
     // Utility methods

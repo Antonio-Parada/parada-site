@@ -81,8 +81,8 @@ function showDashboard() {
         console.log('Dashboard loaded for user:', user.name);
         
         // Update dashboard title with user info
-        const dashboardTitle = document.getElementById('dashboard-title');
-        const dashboardSubtitle = document.getElementById('dashboard-subtitle');
+        const dashboardTitle = document.querySelector('h1');
+        const dashboardSubtitle = document.querySelector('.subtitle');
         
         if (dashboardTitle) {
             dashboardTitle.textContent = `📊 ${user.name}'s Blog Dashboard`;
@@ -90,6 +90,9 @@ function showDashboard() {
         if (dashboardSubtitle) {
             dashboardSubtitle.textContent = `Welcome to your content management system, ${user.name}`;
         }
+        
+        // Show blog info if available
+        showBlogInfo();
     }
 }
 
@@ -108,6 +111,7 @@ function loadDashboardData() {
     // Load all dashboard components
     loadStats();
     loadRecentActivity();
+    showBlogInfo();
 }
 
 // Post creation form handlers
@@ -300,6 +304,59 @@ function showAnalytics() {
 // Settings placeholder
 function showSettings() {
     alert('Settings feature coming soon! This will allow you to customize your blog configuration.');
+}
+
+// Show blog information
+function showBlogInfo() {
+    const blogInfo = localStorage.getItem('user_blog_info');
+    if (blogInfo) {
+        try {
+            const blog = JSON.parse(blogInfo);
+            
+            // Add blog info section to dashboard
+            const dashboardContent = document.querySelector('.dashboard-content');
+            if (dashboardContent) {
+                let blogInfoSection = document.getElementById('blog-info-section');
+                
+                if (!blogInfoSection) {
+                    blogInfoSection = document.createElement('div');
+                    blogInfoSection.id = 'blog-info-section';
+                    blogInfoSection.innerHTML = `
+                        <div style="background: #e8f5e8; border: 1px solid #28a745; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                            <h3 style="color: #28a745; margin-top: 0;">🌐 Your Blog</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <strong>Blog Title:</strong><br>
+                                    <span>${blog.blogTitle}</span>
+                                </div>
+                                <div>
+                                    <strong>Username:</strong><br>
+                                    <span>${blog.username}</span>
+                                </div>
+                                <div>
+                                    <strong>URL:</strong><br>
+                                    <a href="https://blog.mypp.site/${blog.username}" target="_blank" style="color: #0066cc;">blog.mypp.site/${blog.username}</a>
+                                </div>
+                                <div>
+                                    <strong>Created:</strong><br>
+                                    <span>${new Date(blog.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            ${blog.description ? `<div style="margin-top: 1rem;"><strong>Description:</strong><br><span style="color: #666;">${blog.description}</span></div>` : ''}
+                        </div>
+                    `;
+                    
+                    // Insert after the welcome section
+                    const welcomeSection = dashboardContent.querySelector('h1');
+                    if (welcomeSection && welcomeSection.nextElementSibling) {
+                        welcomeSection.nextElementSibling.insertAdjacentElement('afterend', blogInfoSection);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error displaying blog info:', error);
+        }
+    }
 }
 
 // Modal management

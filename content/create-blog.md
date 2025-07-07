@@ -126,69 +126,125 @@ Once your blog is created, you'll receive:
 ---
 
 <script>
-document.getElementById('createBlogForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-    
-    // Validate username
-    const username = data.username;
-    if (!/^[a-z0-9-]{3,20}$/.test(username)) {
-        alert('Username must be 3-20 characters, lowercase letters, numbers, and hyphens only.');
-        return;
+// Check if user is already logged in with Google OAuth
+function checkAuthAndUpdateForm() {
+    if (typeof googleAuth !== 'undefined' && googleAuth.currentUser) {
+        // User is logged in, redirect to dashboard
+        const message = document.createElement('div');
+        message.innerHTML = `
+            <div style="text-align: center; padding: 2rem; background: #e8f5e8; border-radius: 8px; border: 1px solid #28a745;">
+                <h3 style="color: #28a745; margin-bottom: 1rem;">👋 Welcome back, ${googleAuth.currentUser.name}!</h3>
+                <p style="margin-bottom: 1rem;">You're already signed in. Ready to manage your blog?</p>
+                <a href="/dashboard/" style="display: inline-block; background: #28a745; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">📊 Go to Dashboard</a>
+            </div>
+        `;
+        document.getElementById('blog-creator').replaceWith(message);
+        return true;
+    }
+    return false;
+}
+
+// Initialize form when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is already authenticated
+    if (checkAuthAndUpdateForm()) {
+        return; // User is logged in, form was replaced
     }
     
-    // Show loading state
-    const submitBtn = document.getElementById('submitBtn');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '⏳ Creating Blog...';
-    submitBtn.disabled = true;
-    
-    try {
-        // In a real implementation, this would call your backend API
-        const response = await fetch('/api/create-blog', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
-        
-        if (response.ok) {
-            // Show success message
-            document.getElementById('createBlogForm').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('blogUrl').textContent = `blog.mypp.site/${username}`;
-        } else {
-            const error = await response.json();
-            alert(`Error: ${error.message || 'Failed to create blog'}`);
-        }
-    } catch (error) {
-        // For demo purposes, show success after 2 seconds
-        setTimeout(() => {
-            document.getElementById('createBlogForm').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('blogUrl').textContent = `blog.mypp.site/${username}`;
-        }, 2000);
-    }
-    
-    // Reset button
-    submitBtn.innerHTML = originalText;
-    submitBtn.disabled = false;
+    // Set up form for non-authenticated users
+    setupCreateBlogForm();
 });
 
-// Real-time username validation
-document.getElementById('username').addEventListener('input', function(e) {
-    const username = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    e.target.value = username;
-    
-    // Check availability (mock)
-    if (username.length >= 3) {
-        // In real implementation, debounce and check availability
-        console.log('Checking availability for:', username);
+function setupCreateBlogForm() {
+    document.getElementById('createBlogForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Validate username
+        const username = data.username;
+        if (!/^[a-z0-9-]{3,20}$/.test(username)) {
+            alert('Username must be 3-20 characters, lowercase letters, numbers, and hyphens only.');
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '⏳ Setting up your blog...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Store blog creation data temporarily
+            const blogData = {
+                username: data.username,
+                blogTitle: data.blogTitle,
+                email: data.email,
+                description: data.description,
+                theme: data.theme,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Store in localStorage for retrieval after OAuth
+            localStorage.setItem('pending_blog_creation', JSON.stringify(blogData));
+            
+            // Redirect to Google OAuth with return URL
+            if (typeof googleAuth !== 'undefined') {
+                // Set a flag to know we came from blog creation
+                localStorage.setItem('oauth_return_action', 'blog_creation');
+                googleAuth.login();
+            } else {
+                // Fallback: show authentication required message
+                showAuthRequiredMessage();
+            }
+            
+        } catch (error) {
+            console.error('Error setting up blog creation:', error);
+            alert('Error: ' + error.message);
+        }
+        
+        // Reset button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function showAuthRequiredMessage() {
+    const form = document.getElementById('createBlogForm');
+    form.innerHTML = `
+        <div style="text-align: center; padding: 2rem; background: #fff3cd; border-radius: 8px; border: 1px solid #ffc107;">
+            <h3 style="color: #856404; margin-bottom: 1rem;">🔐 Authentication Required</h3>
+            <p style="margin-bottom: 1rem;">To create your blog, please sign in with Google first.</p>
+            <button onclick="googleAuth.login()" style="background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#FFFFFF" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+                    <path fill="#FFFFFF" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-2.7.75 4.8 4.8 0 0 1-4.52-3.36H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+                    <path fill="#FFFFFF" d="M4.46 10.41a4.8 4.8 0 0 1-.25-1.41c0-.49.09-.97.25-1.41V5.52H1.83a8 8 0 0 0-.86 3.48c0 1.24.32 2.47.86 3.48l2.63-2.07z"/>
+                    <path fill="#FFFFFF" d="M8.98 3.58c1.32 0 2.5.45 3.44 1.35l2.54-2.54A8 8 0 0 0 8.98 0 8 8 0 0 0 1.83 5.52L4.46 7.6A4.77 4.77 0 0 1 8.98 3.58z"/>
+                </svg>
+                Sign in with Google
+            </button>
+        </div>
+    `;
+}
+
+// Real-time username validation (initialize after DOM loads)
+setTimeout(() => {
+    const usernameInput = document.getElementById('username');
+    if (usernameInput) {
+        usernameInput.addEventListener('input', function(e) {
+            const username = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+            e.target.value = username;
+            
+            // Check availability (mock)
+            if (username.length >= 3) {
+                // In real implementation, debounce and check availability
+                console.log('Checking availability for:', username);
+            }
+        });
     }
-});
+}, 500);
 </script>
 
 <style>

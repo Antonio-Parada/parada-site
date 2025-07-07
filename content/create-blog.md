@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupCreateBlogForm() {
-    document.getElementById('createBlogForm').addEventListener('submit', async function(e) {
+    document.getElementById('createBlogForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         const formData = new FormData(e.target);
@@ -197,31 +197,38 @@ function setupCreateBlogForm() {
                 if (typeof githubAPI !== 'undefined') {
                     submitBtn.innerHTML = '🔄 Processing with GitHub backend...';
                     
-                    const result = await githubAPI.createBlog(blogData);
+                    githubAPI.createBlog(blogData).then(function(result) {
+                        if (result.success) {
+                            // Show success message
+                            document.getElementById('createBlogForm').style.display = 'none';
+                            const successMsg = document.getElementById('successMessage');
+                            successMsg.style.display = 'block';
+                            document.getElementById('blogUrl').textContent = `blog.mypp.site/${data.username}`;
+                            
+                            // Update success message with backend info
+                            successMsg.innerHTML = `
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                                <h3 style="color: #28a745; margin-bottom: 1rem;">Blog Created Successfully!</h3>
+                                <p style="margin-bottom: 1rem;">Your blog has been created via GitHub backend and will be live shortly.</p>
+                                <p>Your blog URL: <strong>blog.mypp.site/${data.username}</strong></p>
+                                <p style="color: #666; font-size: 0.9rem; margin-top: 1rem;">GitHub Pages will rebuild automatically. Your blog should be available within 2-3 minutes.</p>
+                                <div style="margin-top: 1rem;">
+                                    <a href="/dashboard/" style="display: inline-block; background: #28a745; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
+                                    <a href="https://antonio-parada.github.io/parada-site/blogs/${data.username}/" target="_blank" style="display: inline-block; background: #007bff; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; margin-left: 10px;">View Blog</a>
+                                </div>
+                            `;
+                            
+                            console.log('✅ Blog created successfully via GitHub backend');
+                            return;
+                        }
+                    }).catch(function(error) {
+                        console.error('GitHub backend error:', error);
+                        submitBtn.innerHTML = '⚠️ Backend error, trying OAuth...';
+                        // Continue to OAuth fallback
+                        tryOAuthFallback();
+                    });
                     
-                    if (result.success) {
-                        // Show success message
-                        document.getElementById('createBlogForm').style.display = 'none';
-                        const successMsg = document.getElementById('successMessage');
-                        successMsg.style.display = 'block';
-                        document.getElementById('blogUrl').textContent = `blog.mypp.site/${data.username}`;
-                        
-                        // Update success message with backend info
-                        successMsg.innerHTML = `
-                            <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
-                            <h3 style="color: #28a745; margin-bottom: 1rem;">Blog Created Successfully!</h3>
-                            <p style="margin-bottom: 1rem;">Your blog has been created via GitHub backend and will be live shortly.</p>
-                            <p>Your blog URL: <strong id="blogUrl">blog.mypp.site/${data.username}</strong></p>
-                            <p style="color: #666; font-size: 0.9rem; margin-top: 1rem;">GitHub Pages will rebuild automatically. Your blog should be available within 2-3 minutes.</p>
-                            <div style="margin-top: 1rem;">
-                                <a href="/dashboard/" style="display: inline-block; background: #28a745; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">Go to Dashboard</a>
-                                <a href="https://antonio-parada.github.io/parada-site/blogs/${data.username}/" target="_blank" style="display: inline-block; background: #007bff; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; margin-left: 10px;">View Blog</a>
-                            </div>
-                        `;
-                        
-                        console.log('✅ Blog created successfully via GitHub backend');
-                        return; // Exit here on success
-                    }
+                    return; // Don't continue to OAuth if GitHub API is working
                 } else {
                     console.log('GitHub API client not available, falling back to OAuth');
                 }
@@ -291,6 +298,18 @@ function showLocalSuccessMessage(blogData) {
     `;
     
     console.log('Local success message shown, blog data saved locally');
+}
+
+function tryOAuthFallback() {
+    // Fallback to Google OAuth flow
+    if (typeof googleAuth !== 'undefined') {
+        // Set a flag to know we came from blog creation
+        localStorage.setItem('oauth_return_action', 'blog_creation');
+        googleAuth.login();
+    } else {
+        // Show auth required message
+        showAuthRequiredMessage();
+    }
 }
 
 // Real-time username validation (initialize after DOM loads)

@@ -26,31 +26,6 @@
     <!-- GitHub API Backend Client -->
     <script src="{{ "/js/github-api-client.js" | relURL }}"></script>
     
-    <!-- Authentication Fix Script (loads first to prevent conflicts) -->
-    <script src="{{ "/js/auth-fix.js" | relURL }}"></script>
-    
-    <!-- Authentication Status Checker -->
-    <script src="{{ "/js/auth-status-check.js" | relURL }}"></script>
-    
-    <!-- Authentication Debug Tool -->
-    <script src="{{ "/js/auth-debug.js" | relURL }}"></script>
-    
-    <!-- Legacy OAuth Debug Script (fallback) -->
-    <script src="{{ "/js/oauth-debug.js" | relURL }}" defer></script>
-    
-    <!-- Auth Cleanup Script -->
-    <script src="{{ "/js/auth-cleanup.js" | relURL }}" defer></script>
-    
-    <!-- Form Fix Script (emergency backup) -->
-    <script src="{{ "/js/form-fix.js" | relURL }}" defer></script>
-    
-    <!-- Local Debug Test Script (only for localhost development) -->
-    <script>
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            document.write('<script src="{{ "/js/local-debug-test.js" | relURL }}"><\/script>');
-        }
-    </script>
-    
     {{- if (eq .Type "dashboard") }}
     <script src="{{ "/js/dashboard.js" | relURL }}"></script>
     {{- end }}

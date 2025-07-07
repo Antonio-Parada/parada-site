@@ -19,6 +19,13 @@ type: "page"
 document.addEventListener('DOMContentLoaded', function() {
     // The google-auth.js will handle this page automatically
     console.log('OAuth callback page loaded');
+    
+    // Ensure Google Auth is available
+    if (typeof googleAuth !== 'undefined') {
+        console.log('Google Auth available on callback page');
+    } else {
+        console.error('Google Auth not available on callback page');
+    }
 });
 </script>
 

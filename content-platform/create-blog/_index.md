@@ -5,10 +5,10 @@ layout: "single"
 ---
 
 <div class="login-required" style="text-align: center; padding: 50px;">
-    <h2>🚀 Demo Blog Creation</h2>
-    <p>Please use the demo login to create blog posts.</p>
-    <button onclick="demoAuth.demoLogin()" class="demo-login-btn" style="
-        background: #28a745;
+    <h2>🚀 Create Your Blog</h2>
+    <p>Please sign in with Google to create blog posts.</p>
+    <button onclick="googleAuth.login()" class="google-login-btn" style="
+        background: #4285f4;
         color: white;
         border: none;
         padding: 15px 30px;
@@ -16,9 +16,19 @@ layout: "single"
         font-size: 16px;
         cursor: pointer;
         margin-top: 20px;
-    ">🚀 Demo Login</button>
+        display: inline-flex;
+        align-items: center;
+    ">
+        <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px;">
+            <path fill="#FFFFFF" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+            <path fill="#FFFFFF" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-2.7.75 4.8 4.8 0 0 1-4.52-3.36H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+            <path fill="#FFFFFF" d="M4.46 10.41a4.8 4.8 0 0 1-.25-1.41c0-.49.09-.97.25-1.41V5.52H1.83a8 8 0 0 0-.86 3.48c0 1.24.32 2.47.86 3.48l2.63-2.07z"/>
+            <path fill="#FFFFFF" d="M8.98 3.58c1.32 0 2.5.45 3.44 1.35l2.54-2.54A8 8 0 0 0 8.98 0 8 8 0 0 0 1.83 5.52L4.46 7.6A4.77 4.77 0 0 1 8.98 3.58z"/>
+        </svg>
+        Sign in with Google
+    </button>
     <br><small style="color: #666; margin-top: 10px; display: block;">
-        Quick login for testing the platform
+        Secure authentication powered by Google OAuth
     </small>
 </div>
 
@@ -153,8 +163,8 @@ function handleBlogCreation(event) {
     event.preventDefault();
     
     // Check if user is logged in
-    if (!demoAuth.currentUser) {
-        demoAuth.showError('Please login first to create a blog post');
+    if (!googleAuth.currentUser) {
+        googleAuth.showError('Please login first to create a blog post');
         return false;
     }
     
@@ -166,17 +176,17 @@ function handleBlogCreation(event) {
     
     // Validation
     if (!title.trim()) {
-        demoAuth.showError('Please enter a title for your blog post');
+        googleAuth.showError('Please enter a title for your blog post');
         return false;
     }
     
     if (!content.trim()) {
-        demoAuth.showError('Please write some content for your blog post');
+        googleAuth.showError('Please write some content for your blog post');
         return false;
     }
     
     // Create the post
-    demoAuth.createPost(title, content, tags, category)
+    googleAuth.createPost(title, content, tags, category)
         .then(() => {
             // Clear the form
             event.target.reset();
@@ -205,7 +215,7 @@ function handleBlogCreation(event) {
             form.nextElementSibling.scrollIntoView({ behavior: 'smooth' });
         })
         .catch(error => {
-            demoAuth.showError('Failed to create post: ' + error.message);
+            googleAuth.showError('Failed to create post: ' + error.message);
         });
     
     return false;

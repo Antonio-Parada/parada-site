@@ -1,0 +1,259 @@
+name: GitHub Pages Backend API
+
+on:
+  issues:
+    types: [opened, edited]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'API Action'
+        required: true
+        type: choice
+        options:
+          - create-blog
+          - create-post
+          - update-user
+          - get-user-data
+      payload:
+        description: 'JSON Payload'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  pages: write
+
+jobs:
+  handle-api-request:
+    runs-on: ubuntu-latest
+    if: github.event.issue.title && startsWith(github.event.issue.title, '[API]') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Parse API Request
+      id: parse
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "action=${{ github.event.inputs.action }}" >> $GITHUB_OUTPUT
+          echo "payload=${{ github.event.inputs.payload }}" >> $GITHUB_OUTPUT
+          echo "issue_number=" >> $GITHUB_OUTPUT
+        else
+          # Extract action from issue title: [API] action-name
+          ACTION=$(echo "${{ github.event.issue.title }}" | sed 's/\[API\] //' | tr '[:upper:]' '[:lower:]')
+          echo "action=$ACTION" >> $GITHUB_OUTPUT
+          
+          # Extract JSON payload from issue body
+          PAYLOAD=$(echo '${{ github.event.issue.body }}' | jq -c .)
+          echo "payload=$PAYLOAD" >> $GITHUB_OUTPUT
+          echo "issue_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Handle Create Blog Request
+      if: steps.parse.outputs.action == 'create-blog'
+      run: |
+        # Parse the blog creation payload
+        PAYLOAD='${{ steps.parse.outputs.payload }}'
+        USERNAME=$(echo $PAYLOAD | jq -r '.username')
+        BLOG_TITLE=$(echo $PAYLOAD | jq -r '.blogTitle')
+        EMAIL=$(echo $PAYLOAD | jq -r '.email')
+        DESCRIPTION=$(echo $PAYLOAD | jq -r '.description // ""')
+        THEME=$(echo $PAYLOAD | jq -r '.theme // "papermod"')
+        USER_ID=$(echo $PAYLOAD | jq -r '.userId // ""')
+        
+        echo "Creating blog for user: $USERNAME"
+        
+        # Create user data directory if it doesn't exist
+        mkdir -p data/users
+        mkdir -p data/blogs
+        
+        # Generate user ID if not provided
+        if [ -z "$USER_ID" ] || [ "$USER_ID" = "null" ]; then
+          USER_ID="user_$(date +%s)_$(echo $USERNAME | tr '[:upper:]' '[:lower:]')"
+        fi
+        
+        # Create user data file
+        cat > data/users/${USERNAME}.json << EOF
+        {
+          "id": "$USER_ID",
+          "username": "$USERNAME",
+          "email": "$EMAIL",
+          "blogTitle": "$BLOG_TITLE",
+          "description": "$DESCRIPTION",
+          "theme": "$THEME",
+          "createdAt": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)",
+          "status": "active",
+          "postsCount": 0,
+          "lastActivity": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+        }
+        EOF
+        
+        # Create blog data file
+        cat > data/blogs/${USERNAME}.json << EOF
+        {
+          "username": "$USERNAME",
+          "title": "$BLOG_TITLE",
+          "description": "$DESCRIPTION",
+          "theme": "$THEME",
+          "url": "https://blog.mypp.site/$USERNAME",
+          "githubUrl": "https://antonio-parada.github.io/parada-site/blogs/$USERNAME",
+          "createdAt": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)",
+          "posts": []
+        }
+        EOF
+        
+        # Create blog content directory
+        mkdir -p content/blogs/${USERNAME}
+        
+        # Create initial blog page
+        cat > content/blogs/${USERNAME}/_index.md << EOF
+        ---
+        title: "$BLOG_TITLE"
+        description: "$DESCRIPTION"
+        date: $(date -u +%Y-%m-%d)
+        author: "$USERNAME"
+        theme: "$THEME"
+        type: "blog"
+        layout: "blog-home"
+        ---
+        
+        # Welcome to $BLOG_TITLE
+        
+        $DESCRIPTION
+        
+        ## Recent Posts
+        
+        Check back soon for new posts!
+        EOF
+        
+        # Create welcome post
+        POST_FILENAME="welcome-to-$(echo $BLOG_TITLE | tr '[:upper:] ' '[:lower:]-').md"
+        cat > content/blogs/${USERNAME}/${POST_FILENAME} << EOF
+        ---
+        title: "Welcome to $BLOG_TITLE!"
+        date: $(date -u +%Y-%m-%d)
+        author: "$USERNAME"
+        description: "Welcome to my new blog"
+        tags: ["welcome", "first-post"]
+        categories: ["General"]
+        ---
+        
+        # Welcome to $BLOG_TITLE!
+        
+        Congratulations on creating your new blog! This is your first post.
+        
+        ## Getting Started
+        
+        Your blog is now live and ready for content. Here are some things you can do:
+        
+        - **Write new posts** using the dashboard
+        - **Customize your content** with Markdown formatting
+        - **Share your thoughts** with the world
+        - **Build your audience** with regular updates
+        
+        ## About Your Blog
+        
+        - **Blog URL**: \`blog.mypp.site/$USERNAME\`
+        - **Created**: $(date -u +%B\ %d,\ %Y)
+        - **Theme**: $THEME
+        
+        Start writing and sharing your amazing content!
+        
+        ---
+        
+        *This post was automatically created when you set up your blog. Feel free to edit or delete it.*
+        EOF
+        
+        # Update blog data with first post
+        jq --arg filename "$POST_FILENAME" --arg title "Welcome to $BLOG_TITLE!" --arg date "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)" \
+           '.posts = [{"filename": $filename, "title": $title, "date": $date, "published": true}]' \
+           data/blogs/${USERNAME}.json > temp.json && mv temp.json data/blogs/${USERNAME}.json
+        
+        # Update user posts count
+        jq '.postsCount = 1' data/users/${USERNAME}.json > temp.json && mv temp.json data/users/${USERNAME}.json
+        
+        echo "Blog created successfully for $USERNAME"
+        
+    - name: Handle Create Post Request
+      if: steps.parse.outputs.action == 'create-post'
+      run: |
+        PAYLOAD='${{ steps.parse.outputs.payload }}'
+        USERNAME=$(echo $PAYLOAD | jq -r '.username')
+        TITLE=$(echo $PAYLOAD | jq -r '.title')
+        CONTENT=$(echo $PAYLOAD | jq -r '.content')
+        TAGS=$(echo $PAYLOAD | jq -r '.tags // ""')
+        CATEGORY=$(echo $PAYLOAD | jq -r '.category // "General"')
+        
+        echo "Creating post for user: $USERNAME"
+        
+        # Generate filename from title
+        POST_FILENAME="$(echo $TITLE | tr '[:upper:] ' '[:lower:]-' | sed 's/[^a-z0-9-]//g').md"
+        
+        # Create post file
+        cat > content/blogs/${USERNAME}/${POST_FILENAME} << EOF
+        ---
+        title: "$TITLE"
+        date: $(date -u +%Y-%m-%d)
+        author: "$USERNAME"
+        tags: [$(echo $TAGS | sed 's/,/", "/g' | sed 's/^/"/' | sed 's/$/"/')]
+        categories: ["$CATEGORY"]
+        ---
+        
+        $CONTENT
+        EOF
+        
+        # Update blog data
+        jq --arg filename "$POST_FILENAME" --arg title "$TITLE" --arg date "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)" \
+           '.posts += [{"filename": $filename, "title": $title, "date": $date, "published": true}]' \
+           data/blogs/${USERNAME}.json > temp.json && mv temp.json data/blogs/${USERNAME}.json
+        
+        # Update user data
+        jq '.postsCount += 1 | .lastActivity = "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"' \
+           data/users/${USERNAME}.json > temp.json && mv temp.json data/users/${USERNAME}.json
+        
+        echo "Post created successfully: $TITLE"
+        
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        if [ -n "$(git status --porcelain)" ]; then
+          git add .
+          git commit -m "Backend API: ${{ steps.parse.outputs.action }} - $(date)"
+          git push
+          echo "Changes committed and pushed"
+        else
+          echo "No changes to commit"
+        fi
+        
+    - name: Close API Issue
+      if: steps.parse.outputs.issue_number
+      uses: peter-evans/close-issue@v3
+      with:
+        issue-number: ${{ steps.parse.outputs.issue_number }}
+        comment: |
+          ✅ **API Request Processed Successfully**
+          
+          **Action:** `${{ steps.parse.outputs.action }}`
+          **Status:** Completed
+          **Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)
+          
+          The request has been processed and changes have been committed to the repository.
+          
+          GitHub Pages will rebuild automatically. Changes should be live within a few minutes.
+          
+          🔗 **Check your site:** https://antonio-parada.github.io/parada-site/
+          
+          ---
+          *This issue was automatically closed by the Backend API workflow.*

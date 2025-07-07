@@ -103,28 +103,130 @@
         }
     }
     
-    // Prevent navigation loops
+    // Prevent navigation loops with enhanced detection
     function preventNavigationLoops() {
-        let lastPath = '';
-        let pathChangeCount = 0;
+        let navigationHistory = [];
+        let maxHistorySize = 10;
+        let loopDetectionThreshold = 3;
         
-        function checkForLoop() {
-            const currentPath = window.location.pathname;
-            
-            if (currentPath === lastPath) {
-                pathChangeCount++;
-                if (pathChangeCount > 3) {
-                    console.warn('Navigation loop detected, redirecting to home');
-                    window.location.href = '/';
-                }
-            } else {
-                pathChangeCount = 0;
-                lastPath = currentPath;
+        function addToHistory(path, timestamp) {
+            navigationHistory.push({ path, timestamp });
+            if (navigationHistory.length > maxHistorySize) {
+                navigationHistory.shift();
             }
         }
         
-        // Check for loops every 2 seconds
-        setInterval(checkForLoop, 2000);
+        function detectLoop() {
+            const currentPath = window.location.pathname;
+            const now = Date.now();
+            
+            // Add current navigation to history
+            addToHistory(currentPath, now);
+            
+            // Check for rapid repeated visits to same path
+            const recentSamePath = navigationHistory.filter(
+                entry => entry.path === currentPath && (now - entry.timestamp) < 10000
+            );
+            
+            if (recentSamePath.length >= loopDetectionThreshold) {
+                console.warn('🔄 Navigation loop detected!', {
+                    path: currentPath,
+                    occurrences: recentSamePath.length,
+                    history: navigationHistory
+                });
+                
+                // Clear authentication and redirect to safe page
+                clearLoopingAuth();
+                return true;
+            }
+            
+            // Check for rapid OAuth callback loops
+            if (currentPath.includes('/auth/callback')) {
+                const callbackVisits = navigationHistory.filter(
+                    entry => entry.path.includes('/auth/callback') && (now - entry.timestamp) < 30000
+                );
+                
+                if (callbackVisits.length >= 2) {
+                    console.warn('🔄 OAuth callback loop detected!');
+                    clearLoopingAuth();
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        function clearLoopingAuth() {
+            // Clear potentially corrupted OAuth state
+            localStorage.removeItem('google_oauth_state');
+            localStorage.removeItem('google_code_verifier');
+            localStorage.removeItem('oauth_return_action');
+            
+            // Show user-friendly error message
+            document.body.innerHTML = `
+                <div style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    background: #f8f9fa;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                ">
+                    <div style="
+                        background: white;
+                        padding: 2rem;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        text-align: center;
+                        max-width: 500px;
+                    ">
+                        <h2 style="color: #dc3545; margin-bottom: 1rem;">🔄 Authentication Loop Detected</h2>
+                        <p style="margin-bottom: 1rem; color: #666;">We detected repeated sign-in attempts. This usually happens due to browser settings or temporary issues.</p>
+                        <p style="margin-bottom: 2rem; color: #666;">We've cleared the authentication state to help resolve this.</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="location.reload()" style="
+                                background: #007bff;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">🔄 Try Again</button>
+                            <button onclick="window.location.href='/'" style="
+                                background: #28a745;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">🏠 Go Home</button>
+                            <button onclick="window.authStatusChecker?.show()" style="
+                                background: #6c757d;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">🔍 Debug Info</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Check for loops on page navigation
+        const observer = new MutationObserver(() => {
+            detectLoop();
+        });
+        
+        // Also check periodically
+        setInterval(detectLoop, 3000);
+        
+        // Initial check
+        detectLoop();
     }
     
     // Initialize fixes

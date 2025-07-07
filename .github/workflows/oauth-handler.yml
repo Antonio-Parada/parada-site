@@ -1,0 +1,93 @@
+name: OAuth Token Exchange Handler
+
+on:
+  repository_dispatch:
+    types: [oauth_exchange]
+  workflow_dispatch:
+    inputs:
+      code:
+        description: 'OAuth authorization code'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  exchange-token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Exchange OAuth Code for Token
+        env:
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+        run: |
+          # Get the OAuth code from payload or input
+          CODE="${{ github.event.client_payload.code || github.event.inputs.code }}"
+          
+          echo "Exchanging OAuth code for access token..."
+          
+          # Exchange code for access token
+          RESPONSE=$(curl -s -X POST \
+            -H "Accept: application/json" \
+            -d "client_id=${GITHUB_CLIENT_ID}" \
+            -d "client_secret=${GITHUB_CLIENT_SECRET}" \
+            -d "code=${CODE}" \
+            https://github.com/login/oauth/access_token)
+          
+          echo "OAuth Response: $RESPONSE"
+          
+          # Parse the response
+          ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token // empty')
+          ERROR=$(echo "$RESPONSE" | jq -r '.error // empty')
+          
+          # Create response file
+          mkdir -p data/auth
+          
+          if [ -n "$ACCESS_TOKEN" ] && [ "$ACCESS_TOKEN" != "null" ]; then
+            # Success - store the token
+            cat > "data/auth/${CODE}.json" << EOF
+          {
+            "access_token": "$ACCESS_TOKEN",
+            "token_type": "bearer",
+            "scope": "read:user user:email repo",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "expires_in": 28800
+          }
+          EOF
+            echo "✅ Token exchange successful"
+          else
+            # Error - store the error
+            cat > "data/auth/${CODE}.json" << EOF
+          {
+            "error": "${ERROR:-unknown_error}",
+            "error_description": "Failed to exchange OAuth code for token",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+            echo "❌ Token exchange failed: $ERROR"
+          fi
+
+      - name: Commit Auth Result
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          CODE="${{ github.event.client_payload.code || github.event.inputs.code }}"
+          
+          git add "data/auth/${CODE}.json"
+          git commit -m "OAuth token exchange result for ${CODE:0:8}..." || echo "No changes to commit"
+          git push
+
+      - name: Cleanup Old Auth Files
+        run: |
+          # Remove auth files older than 1 hour to prevent clutter
+          find data/auth -name "*.json" -mmin +60 -delete 2>/dev/null || true
+          
+          # Commit cleanup if any files were removed
+          git add data/auth/
+          git commit -m "Cleanup old OAuth auth files" || echo "No cleanup needed"
+          git push || echo "No changes to push"

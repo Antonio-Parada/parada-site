@@ -10,6 +10,11 @@ theme = 'PaperMod'
 # Platform-specific content
 contentDir = 'content-platform'
 
+# Custom JavaScript for authentication
+[params.custom]
+  includeAuthJS = true
+  includeDashboardJS = true
+
 # Enable multi-tenant features
 enableGitInfo = true
 

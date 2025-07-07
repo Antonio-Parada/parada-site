@@ -1,0 +1,48 @@
+# GitHub OAuth Authentication Configuration
+# This file defines the authentication system using GitHub as the provider
+
+oauth:
+  provider: "github"
+  client_id: "your_github_oauth_app_client_id"  # Set in GitHub Settings > Developer > OAuth Apps
+  redirect_uri: "https://blog.mypp.site/auth/callback"
+  scope: "read:user,user:email,repo"
+  
+database:
+  # Using GitHub repository as database
+  users_repo: "Antonio-Parada/parada-site"
+  users_path: "data/users"
+  sessions_path: "data/sessions"
+  
+permissions:
+  # Define user roles and permissions
+  roles:
+    admin:
+      - create_tenant
+      - manage_all_content
+      - manage_users
+      - access_analytics
+    
+    blogger:
+      - create_posts
+      - edit_own_posts
+      - publish_posts
+      - access_own_analytics
+    
+    viewer:
+      - read_posts
+      - comment_posts
+
+security:
+  session_duration: "24h"
+  jwt_secret: "will_be_generated"
+  csrf_protection: true
+  rate_limiting:
+    login_attempts: 5
+    time_window: "15m"
+
+endpoints:
+  login: "/auth/login"
+  logout: "/auth/logout"
+  callback: "/auth/callback"
+  profile: "/auth/profile"
+  dashboard: "/dashboard"

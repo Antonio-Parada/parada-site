@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="{{ .Language.Lang }}" dir="{{ .Language.LanguageDirection | default "auto" }}">
+
+<head>
+    {{- partial "head.html" . }}
+</head>
+
+<body class="
+{{- if (or (ne .Kind "page" ) (eq .Layout "archives") (eq .Layout "search")) -}}
+{{- print "list" -}}
+{{- end -}}
+{{- if eq site.Params.defaultTheme "dark" -}}
+{{- print " dark" }}
+{{- end -}}
+" id="top">
+    {{- partialCached "header.html" . .Page -}}
+    <main class="main">
+        {{- block "main" . }}{{ end }}
+    </main>
+
+    {{- partialCached "footer.html" . .Page -}}
+
+    {{- if site.Params.custom.includeAuthJS }}
+    <script src="{{ "/js/auth.js" | relURL }}"></script>
+    {{- end }}
+    
+    {{- if and site.Params.custom.includeDashboardJS (eq .Type "dashboard") }}
+    <script src="{{ "/js/dashboard.js" | relURL }}"></script>
+    {{- end }}
+</body>
+
+</html>

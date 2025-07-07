@@ -53,10 +53,17 @@ enableGitInfo = true
     url = '/create-blog/'
     weight = 20
   [[menu.main]]
-    identifier = 'parada-blog'
-    name = '👤 Parada Blog'
-    url = '/parada/'
+    identifier = 'published-blogs'
+    name = '📚 Published Blogs'
+    url = '#'
     weight = 30
+    
+    [[menu.main]]
+    identifier = 'parada-blog'
+    name = '👤 Parada'
+    url = '/parada/'
+    parent = 'published-blogs'
+    weight = 31
 
 [markup]
   [markup.goldmark]

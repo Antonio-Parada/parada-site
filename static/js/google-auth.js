@@ -3,7 +3,7 @@
 
 class GoogleAuth {
     constructor() {
-        this.clientId = '1020804229425-5jo4h4i8b2vje86kg6mq7v4v4v9bj1kf.apps.googleusercontent.com'; // Google OAuth Client ID
+        this.clientId = '717968394179-ldu9da3rq27aridcm93gnjskujd5usv9.apps.googleusercontent.com'; // Google OAuth Client ID
         this.redirectUri = window.location.origin + '/auth/callback/';
         this.scope = 'openid email profile';
         

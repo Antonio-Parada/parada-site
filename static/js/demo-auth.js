@@ -35,6 +35,11 @@ class DemoAuth {
         this.currentUser = null;
     }
 
+    // Login method (redirects to demo login)
+    login() {
+        this.demoLogin();
+    }
+
     // Simple demo login
     demoLogin() {
         const userName = prompt('Enter your name for demo:') || 'Demo User';
@@ -286,6 +291,14 @@ ${content}`;
 // Initialize demo auth
 const demoAuth = new DemoAuth();
 
+// Override any existing blogAuth to prevent GitHub OAuth
+window.blogAuth = {
+    login: () => demoAuth.demoLogin(),
+    logout: () => demoAuth.logout(),
+    currentUser: demoAuth.currentUser,
+    createPost: (title, content, tags, category) => demoAuth.createPost(title, content, tags, category)
+};
+
 // Add demo auth styles
 const demoAuthStyles = document.createElement('style');
 demoAuthStyles.textContent = `
@@ -364,3 +377,75 @@ demoAuthStyles.textContent = `
 `;
 
 document.head.appendChild(demoAuthStyles);
+
+// Universal override to prevent any GitHub OAuth calls
+setInterval(() => {
+    // Update blogAuth reference
+    if (window.blogAuth) {
+        window.blogAuth.currentUser = demoAuth.currentUser;
+        window.blogAuth.login = () => demoAuth.demoLogin();
+        window.blogAuth.logout = () => demoAuth.logout();
+        window.blogAuth.createPost = (title, content, tags, category) => demoAuth.createPost(title, content, tags, category);
+    }
+    
+    // Replace any GitHub login buttons
+    const githubButtons = document.querySelectorAll('button, a');
+    githubButtons.forEach(button => {
+        const text = button.textContent || button.innerText;
+        if (text && (text.includes('Sign in with GitHub') || text.includes('GitHub') || text.includes('🔑'))) {
+            // Replace the onclick handler
+            button.onclick = (e) => {
+                e.preventDefault();
+                demoAuth.demoLogin();
+                return false;
+            };
+            
+            // Update button text to indicate demo
+            if (!text.includes('Demo')) {
+                button.innerHTML = '🚀 Demo Login';
+                button.title = 'Demo authentication - no GitHub setup required';
+            }
+        }
+    });
+}, 1000);
+
+// Override window navigation to prevent GitHub OAuth
+const originalAssign = window.location.assign;
+const originalReplace = window.location.replace;
+const originalHref = window.location.href;
+
+Object.defineProperty(window.location, 'href', {
+    set: function(url) {
+        if (url && url.includes('github.com/login/oauth/authorize')) {
+            console.log('Blocked GitHub OAuth redirect, using demo login instead');
+            demoAuth.showSuccess('Using demo authentication instead of GitHub OAuth');
+            demoAuth.demoLogin();
+            return;
+        }
+        originalHref = url;
+        window.location.assign(url);
+    },
+    get: function() {
+        return originalHref;
+    }
+});
+
+window.location.assign = function(url) {
+    if (url && url.includes('github.com/login/oauth/authorize')) {
+        console.log('Blocked GitHub OAuth redirect, using demo login instead');
+        demoAuth.showSuccess('Using demo authentication instead of GitHub OAuth');
+        demoAuth.demoLogin();
+        return;
+    }
+    originalAssign.call(this, url);
+};
+
+window.location.replace = function(url) {
+    if (url && url.includes('github.com/login/oauth/authorize')) {
+        console.log('Blocked GitHub OAuth redirect, using demo login instead');
+        demoAuth.showSuccess('Using demo authentication instead of GitHub OAuth');
+        demoAuth.demoLogin();
+        return;
+    }
+    originalReplace.call(this, url);
+};

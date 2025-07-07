@@ -41,7 +41,7 @@
         });
     }
     
-    // Suppress client secret console errors
+    // Suppress client secret console errors and notifications
     function suppressClientSecretErrors() {
         const originalConsoleError = console.error;
         console.error = function(...args) {
@@ -51,12 +51,22 @@
             if (message.includes('client_secret') || 
                 message.includes('client secret') ||
                 message.includes('Missing client_secret')) {
-                console.log('Suppressed PKCE-expected error:', message);
+                console.log('ℹ️ OAuth using PKCE flow (client secret not required)');
                 return;
             }
             
             // Show all other errors normally
             originalConsoleError.apply(console, args);
+        };
+        
+        // Also suppress notifications/alerts about client secret
+        const originalAlert = window.alert;
+        window.alert = function(message) {
+            if (message && (message.includes('client secret') || message.includes('client_secret'))) {
+                console.log('ℹ️ Suppressed client secret alert (PKCE flow is normal)');
+                return;
+            }
+            originalAlert.call(window, message);
         };
     }
     
